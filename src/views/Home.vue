@@ -156,6 +156,7 @@ export default {
       })
         .then((resp) => {
           this.results = resp.data.results;
+          this.totalPages = resp.data.total_pages;
         })
         .catch((error) => {
           console.log(error, "error");
