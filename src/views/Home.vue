@@ -1,103 +1,215 @@
 <template>
+  <div class="pa-3">
+    <v-btn
+      v-for="sel in collections"
+      class="mr-3"
+      color="primary"
+      :variant="currentCollection == sel.value ? 'flat' : 'outlined'"
+      @click="currentCollection = sel.value"
+      >{{ sel.name }}</v-btn
+    >
+  </div>
+
   <div>
-    <div id="home-container">
-      <div class="featured-recipes">
-        <!-- <recipe-card-scroll /> -->
-        <h2 class="text-center">Featured Recipes</h2>
-        <featured-recipes />
-      </div>
-      <!-- <div class="quick-search">
-        <h3 style="color: white" class="text-center">
-          Find the Perfect Recipe
-        </h3>
-        <v-row>
-          <v-col cols="3" v-for="category in categories">
-            <div class="pa-2 text-center">
-              <font-awesome-icon
-                style="color: white; font-size: 2.3rem"
-                :icon="category.icon"
-              />
-              <p style="color: white">{{ category.label }}</p>
-            </div>
-          </v-col>
-        </v-row>
-      </div> -->
-      <div class="recipe-list">
-        <v-row no-gutters class="pa-3">
-          <v-col cols="3">
-            <div
-              style="
-                height: 100%;
-                display: flex;
-                flex-direction: center;
-                align-items: center;
-              "
-            >
-              <v-divider color="black"></v-divider>
-            </div>
-          </v-col>
-          <v-col class="pa-2">
-            <h2 class="text-center">More Recipes</h2>
-          </v-col>
-          <v-col cols="3">
-            <div
-              style="
-                height: 100%;
-                display: flex;
-                flex-direction: center;
-                align-items: center;
-              "
-            >
-              <v-divider color="black"></v-divider>
-            </div>
-          </v-col>
-        </v-row>
-        <recipe-list />
-      </div>
+    <div class="text-center pa-5">
+      <h1>{{ collections[currentCollection].name }}</h1>
+    </div>
+
+    <div
+      v-if="currentCollection == 3"
+      style="display: flex; justify-content: center"
+    >
+      <v-text-field
+        @keydown.enter="startSearch"
+        v-model="searchText"
+        variant="outlined"
+        label="Search"
+      >
+        <template v-slot:append-inner>
+          <v-btn @click="startSearch" variant="text">search</v-btn>
+        </template>
+      </v-text-field>
+    </div>
+    <v-row class="pa-3">
+      <v-col
+        cols="12"
+        sm="4"
+        md="3"
+        v-for="(result, index) in results"
+        :key="index"
+      >
+        <div>
+          <v-hover>
+            <template v-slot:default="{ isHovering, props }">
+              <div class="img-wrap" v-bind="props">
+                <v-img
+                  class="img"
+                  @click="goToDetails(result)"
+                  max-height="100%"
+                  :src="
+                    'https://image.tmdb.org/t/p/original/' +
+                    (result.poster_path || '')
+                  "
+                  :lazy-src="
+                    'https://image.tmdb.org/t/p/original/' +
+                    (result.poster_path || '')
+                  "
+                >
+                  <template v-slot:placeholder>
+                    <div class="d-flex align-center justify-center fill-height">
+                      <v-progress-circular
+                        color="grey-lighten-4"
+                        indeterminate
+                      ></v-progress-circular>
+                    </div>
+                  </template>
+                </v-img>
+              </div>
+            </template>
+          </v-hover>
+          <p class="text-center">{{ result.name || result.title }}</p>
+        </div>
+      </v-col>
+    </v-row>
+    <div>
+      <!-- {{ currentPage }} -->
+      <!-- @prev="getResults(this.collections[this.currentCollection].endpoint)"
+        @next="getResults(this.collections[this.currentCollection].endpoint)" -->
+      <v-pagination
+        v-model="currentPage"
+        :total-visible="6"
+        :length="totalPages"
+      ></v-pagination>
     </div>
   </div>
 </template>
-
 <script>
-// import ArticleList from "@/components/Articles/ArticleList.vue";
-import RecipeList from "@/components/Recipes/RecipeList.vue";
-import RecipeCardScroll from "@/components/Recipes/RecipeCardScroll.vue";
-import FeaturedRecipes from "@/components/Recipes/FeaturedRecipes.vue";
-
 export default {
-  name: "Home",
-  metaInfo: {
-    title: "As Made By Alex",
-  },
-
   data() {
     return {
-      message: "hi",
-      categories: [
-        { label: "Breads", icon: "fa-bread-slice" },
-        { label: "Breakfast", icon: "fa-bacon" },
-        { label: "Desserts", icon: "fa-ice-cream" },
-        { label: "Savory", icon: "fa-drumstick-bite" },
+      results: [],
+      searchResults: [],
+      totalPages: 0,
+      currentPage: 1,
+      searchText: "",
+      currentCollection: 0,
+      loading: false,
+      collections: [
+        {
+          value: 0,
+          name: "Trending Now",
+          endpoint: "trending/all/day",
+        },
+        {
+          value: 1,
+          name: "Movies",
+          endpoint: "movie/popular",
+        },
+        {
+          value: 2,
+          name: "Shows",
+          endpoint: "tv/popular",
+        },
+        {
+          value: 3,
+          name: "Search",
+          endpoint: "",
+        },
       ],
     };
   },
-  components: {
-    // ArticleList,
-    RecipeList,
-    RecipeCardScroll,
-    FeaturedRecipes,
+  watch: {
+    currentCollection() {
+      this.currentPage = 1;
+      if (this.currentCollection != 3) {
+        console.log(this.currentCollection, "updated");
+        this.getResults(this.collections[this.currentCollection].endpoint);
+      } else {
+        this.results = this.searchResults;
+        this.totalPages = 0;
+      }
+    },
+    currentPage() {
+      console.log(this.currentPage);
+      if (this.currentCollection != 3) {
+        this.getResults(this.collections[this.currentCollection].endpoint);
+      }
+    },
+  },
+  methods: {
+    goToDetails(item) {
+      if (item.hasOwnProperty("first_air_date")) {
+        console.log("this is a tv show");
+        this.$router.push("/tv/" + item.id);
+      } else {
+        this.$router.push("/movie/" + item.id);
+      }
+    },
+    getResults(collection) {
+      console.log("getting movies");
+      this.loading = true;
+      this.axios(
+        `${import.meta.env.VITE_APP_MOVIE_API}/${collection}?api_key=${
+          import.meta.env.VITE_APP_MOVIE_API_KEY
+        }&page=${this.currentPage}&with_origin_country=US`
+      )
+        .then((response) => {
+          console.log(response, "success");
+          this.results = response.data.results;
+          this.totalPages = response.data.total_pages;
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+    startSearch() {
+      this.searchModal = false;
+      console.log(this.searchText, "searching...");
+      this.loading = true;
+      this.axios
+        .get(
+          import.meta.env.VITE_APP_MOVIE_API +
+            `/search/multi?api_key=${
+              import.meta.env.VITE_APP_MOVIE_API_KEY
+            }&query=${this.searchText}&with_origin_country=US`
+        )
+        .then((resp) => {
+          console.log(resp, "SEARCHED");
+          this.searchResults = resp.data.results;
+          this.results = this.searchResults;
+          this.totalPages = response.data.total_pages;
+        })
+        .catch((error) => {
+          console.log(error, "error");
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+  },
+  mounted() {
+    this.getResults(this.collections[this.currentCollection].endpoint);
   },
 };
 </script>
+
 <style lang="scss">
-// #home-container {
-//   min-height: 100%;
-// }
-.featured-recipes {
-  margin: 20px 10px;
+.img-wrap {
+  transition: 0.3s;
+  // border: 2px solid red;
+  border-radius: 10px;
+  .img {
+    border-radius: 10px;
+    cursor: pointer;
+  }
 }
-.quick-search {
-  background-color: #1d201f;
-  padding: 10px;
+
+.img-wrap:hover {
+  transition: 0.3s;
+  box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
+  transform: scale(1.02);
 }
 </style>

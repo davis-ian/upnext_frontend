@@ -1,5 +1,5 @@
 import { createWebHistory, createRouter } from "vue-router";
-import MoviesHome from "@/views/MoviesHome.vue";
+import Home from "@/views/Home.vue";
 import UserProfile from "@/views/UserProfile.vue";
 import MovieDetails from "@/views/MovieDetails.vue";
 import TVDetails from "@/views/TVDetails.vue";
@@ -9,7 +9,7 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: MoviesHome,
+    component: Home,
   },
   {
     path: "/profile",
