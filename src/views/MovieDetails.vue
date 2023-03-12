@@ -63,6 +63,7 @@
   </div>
 </template>
 <script>
+import MoviesAPI from "@/api/movies";
 export default {
   data() {
     return {
@@ -73,30 +74,18 @@ export default {
   },
   methods: {
     getDetails(id) {
-      console.log(id);
-      this.axios
-        .get(
-          import.meta.env.VITE_APP_MOVIE_API +
-            `/movie/${id}?api_key=${import.meta.env.VITE_APP_MOVIE_API_KEY}`
-        )
-        .then((resp) => {
-          console.log(resp, "details success");
-          this.movie = resp.data;
-          console.log(this.movie);
-        });
+      MoviesAPI.show(id, "/movie/", {
+        api_key: import.meta.env.VITE_APP_MOVIE_API_KEY,
+      }).then((resp) => {
+        this.movie = resp.data;
+      });
     },
     getWatchProviders(id) {
-      this.axios
-        .get(
-          import.meta.env.VITE_APP_MOVIE_API +
-            `/movie/${id}/watch/providers?api_key=${
-              import.meta.env.VITE_APP_MOVIE_API_KEY
-            }`
-        )
-        .then((resp) => {
-          this.providers = resp.data.results.US;
-          console.log(this.providers, "providers");
-        });
+      MoviesAPI.indexProviders(id, "movie", {
+        api_key: import.meta.env.VITE_APP_MOVIE_API_KEY,
+      }).then((resp) => {
+        this.providers = resp.data.results.US;
+      });
     },
   },
   mounted() {

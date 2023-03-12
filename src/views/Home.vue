@@ -67,7 +67,7 @@
               </div>
             </template>
           </v-hover>
-          <p class="text-center">{{ result.name || result.title }}</p>
+          <!-- <p class="text-center">{{ result.name || result.title }}</p> -->
         </div>
       </v-col>
     </v-row>
@@ -76,6 +76,7 @@
       <!-- @prev="getResults(this.collections[this.currentCollection].endpoint)"
         @next="getResults(this.collections[this.currentCollection].endpoint)" -->
       <v-pagination
+        v-if="totalPages > 0"
         v-model="currentPage"
         :total-visible="6"
         :length="totalPages"
@@ -84,6 +85,7 @@
   </div>
 </template>
 <script>
+import MoviesAPI from "@/api/movies";
 export default {
   data() {
     return {
@@ -93,7 +95,7 @@ export default {
       currentPage: 1,
       searchText: "",
       currentCollection: 0,
-      loading: false,
+      loading: true,
       collections: [
         {
           value: 0,
@@ -146,20 +148,17 @@ export default {
       }
     },
     getResults(collection) {
-      console.log("getting movies");
       this.loading = true;
-      this.axios(
-        `${import.meta.env.VITE_APP_MOVIE_API}/${collection}?api_key=${
-          import.meta.env.VITE_APP_MOVIE_API_KEY
-        }&page=${this.currentPage}&with_origin_country=US`
-      )
-        .then((response) => {
-          console.log(response, "success");
-          this.results = response.data.results;
-          this.totalPages = response.data.total_pages;
+      MoviesAPI.index(collection, {
+        api_key: import.meta.env.VITE_APP_MOVIE_API_KEY,
+        with_origin_country: "US",
+        page: this.currentPage,
+      })
+        .then((resp) => {
+          this.results = resp.data.results;
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error, "error");
         })
         .finally(() => {
           this.loading = false;
@@ -167,20 +166,16 @@ export default {
     },
     startSearch() {
       this.searchModal = false;
-      console.log(this.searchText, "searching...");
       this.loading = true;
-      this.axios
-        .get(
-          import.meta.env.VITE_APP_MOVIE_API +
-            `/search/multi?api_key=${
-              import.meta.env.VITE_APP_MOVIE_API_KEY
-            }&query=${this.searchText}&with_origin_country=US`
-        )
+
+      MoviesAPI.index("search/multi", {
+        api_key: import.meta.env.VITE_APP_MOVIE_API_KEY,
+        with_origin_country: "US",
+        page: this.currentPage,
+        query: this.searchText,
+      })
         .then((resp) => {
-          console.log(resp, "SEARCHED");
-          this.searchResults = resp.data.results;
-          this.results = this.searchResults;
-          this.totalPages = response.data.total_pages;
+          this.results = resp.data.results;
         })
         .catch((error) => {
           console.log(error, "error");
