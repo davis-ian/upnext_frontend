@@ -2,25 +2,34 @@ import axios from "axios";
 
 export default {
   index(collection, params) {
-    return axios.get(`${import.meta.env.VITE_APP_MOVIE_API}/${collection}`, {
-      params: params,
+    return axios.get(`${import.meta.env.VITE_APP_MOVIE_API_V3}/${collection}`, {
+      params: {
+        ...params,
+        api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+      },
     });
   },
   show(id, collection, params) {
     return axios.get(
-      import.meta.env.VITE_APP_MOVIE_API + `/${collection}/${id}`,
+      import.meta.env.VITE_APP_MOVIE_API_V3 + `/${collection}/${id}`,
       {
-        params: params,
+        params: {
+          ...params,
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
       }
     );
   },
   indexProviders(id, collection, params) {
     return axios.get(
       `${
-        import.meta.env.VITE_APP_MOVIE_API
+        import.meta.env.VITE_APP_MOVIE_API_V3
       }/${collection}/${id}/watch/providers`,
       {
-        params: params,
+        params: {
+          ...params,
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
       }
     );
   },

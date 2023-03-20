@@ -74,16 +74,12 @@ export default {
   },
   methods: {
     getDetails(id) {
-      MoviesAPI.show(id, "/movie/", {
-        api_key: import.meta.env.VITE_APP_MOVIE_API_KEY,
-      }).then((resp) => {
+      MoviesAPI.show(id, "/movie/", {}).then((resp) => {
         this.movie = resp.data;
       });
     },
     getWatchProviders(id) {
-      MoviesAPI.indexProviders(id, "movie", {
-        api_key: import.meta.env.VITE_APP_MOVIE_API_KEY,
-      }).then((resp) => {
+      MoviesAPI.indexProviders(id, "movie", {}).then((resp) => {
         this.providers = resp.data.results.US;
       });
     },

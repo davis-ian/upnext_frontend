@@ -154,7 +154,6 @@ export default {
     getResults(collection) {
       this.loading = true;
       MoviesAPI.index(collection, {
-        api_key: import.meta.env.VITE_APP_MOVIE_API_KEY,
         with_origin_country: "US",
         page: this.currentPage,
       })
@@ -174,7 +173,6 @@ export default {
       this.loading = true;
 
       MoviesAPI.index("search/multi", {
-        api_key: import.meta.env.VITE_APP_MOVIE_API_KEY,
         with_origin_country: "US",
         page: this.currentPage,
         query: this.searchText,
