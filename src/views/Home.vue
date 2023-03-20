@@ -189,19 +189,6 @@ export default {
     },
   },
   async mounted() {
-    const token = await this.$auth0.getAccessTokenSilently();
-    const claim = this.$auth0.idTokenClaims.value["https://nextup.com/roles"];
-    console.log(claim, "claim");
-    this.axios
-      .create({ headers: { Authorization: "Bearer " + token } })
-      .get(import.meta.env.VITE_APP_API + "/api/private-scoped")
-      .then((response) => {
-        console.log(response.data, "success");
-      })
-      .catch((error) => {
-        console.log(error, "error");
-      });
-
     this.getResults(this.collections[this.currentCollection].endpoint);
   },
 };
