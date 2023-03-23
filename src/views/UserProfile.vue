@@ -9,7 +9,7 @@
                 <code>{{ user }}</code>
             </pre>
 
-      <v-btn color="red" @click="toggleListPrivacy">Toggle</v-btn>
+      <!-- <v-btn color="red" @click="toggleListPrivacy">Toggle</v-btn> -->
     </div>
   </div>
 </template>

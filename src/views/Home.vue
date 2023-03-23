@@ -4,7 +4,7 @@
       <v-btn
         v-for="sel in collections"
         class="mr-3"
-        color="primary"
+        color="#23D9A5"
         :variant="currentCollection == sel.value ? 'flat' : 'outlined'"
         @click="currentCollection = sel.value"
         >{{ sel.name }}</v-btn
@@ -13,24 +13,30 @@
 
     <div>
       <div class="text-center pa-5">
-        <h1>{{ collections[currentCollection].name }}</h1>
+        <h1 style="color: white">{{ collections[currentCollection].name }}</h1>
       </div>
 
-      <div
-        v-if="currentCollection == 3"
-        style="display: flex; justify-content: center"
-      >
+      <div style="display: flex; justify-content: center">
         <v-text-field
+          style="max-width: 500px"
+          density="compact"
+          variant="solo"
+          clearable
           @keydown.enter="startSearch"
           v-model="searchText"
-          variant="outlined"
           label="Search"
+          dense
         >
-          <template v-slot:append-inner>
-            <v-btn @click="startSearch" variant="text">search</v-btn>
-          </template>
         </v-text-field>
+        <v-btn
+          style="height: 40px"
+          class="ml-2"
+          color="#23d9a5"
+          @click="startSearch"
+          >search</v-btn
+        >
       </div>
+
       <v-row class="pa-3">
         <v-col
           cols="12"
@@ -189,6 +195,7 @@ export default {
     },
   },
   async mounted() {
+    console.log(this.$auth0, "auth");
     this.getResults(this.collections[this.currentCollection].endpoint);
   },
 };

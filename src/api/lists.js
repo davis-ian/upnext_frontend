@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export default {
-  index(collection, params) {
-    return axios.get(`${import.meta.env.VITE_APP_MOVIE_API_V4}/${collection}`, {
+  index(params) {
+    return axios.get(`${import.meta.env.VITE_APP_MOVIE_API_V4}/lists/`, {
       params: {
         ...params,
       },

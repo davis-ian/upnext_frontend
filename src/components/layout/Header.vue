@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar color="primary">
+    <v-app-bar color="#23D9A5">
       <v-app-bar-title> Header </v-app-bar-title>
       <v-spacer></v-spacer>
       <span class="mr-2" v-if="user">Welcome, {{ user.nickname }}!</span>

@@ -20,6 +20,9 @@ export default {
   },
 
   components: { Snackbar, Layout },
+  mounted() {
+    console.log("APP MOUNTED");
+  },
 };
 </script>
 
