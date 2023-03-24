@@ -5,7 +5,7 @@ import Home from "@/views/Home.vue";
 import UserProfile from "@/views/UserProfile.vue";
 import MovieDetails from "@/views/MovieDetails.vue";
 import TVDetails from "@/views/TVDetails.vue";
-import HomeOld from "@/views/HomeOld.vue";
+import CreateList from "@/views/CreateList.vue";
 
 const routes = [
   {
@@ -30,9 +30,9 @@ const routes = [
     component: TVDetails,
   },
   {
-    path: "/home-old",
-    name: "OldHome",
-    component: HomeOld,
+    path: "/list/create",
+    name: "CreateList",
+    component: CreateList,
   },
 ];
 
