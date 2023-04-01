@@ -93,7 +93,7 @@ app.config.globalProperties.$axios = { ...axiosInstance };
 // =============================================================================
 // INIT
 // =============================================================================
-app.use(router);
+
 app.use(VueAxios, axios);
 // app.use(Auth0Plugin, {
 //   domain: import.meta.env.VITE_APP_AUTH0_DOMAIN,
@@ -120,6 +120,6 @@ app.use(
     },
   })
 );
-
+app.use(router);
 registerPlugins(app);
 app.mount("#app");
