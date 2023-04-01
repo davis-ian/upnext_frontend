@@ -107,6 +107,9 @@ app.use(VueAxios, axios);
 //     );
 //   },
 // });
+registerPlugins(app);
+app.use(pinia);
+
 app.use(
   createAuth0({
     domain: import.meta.env.VITE_APP_AUTH0_DOMAIN,
@@ -118,8 +121,5 @@ app.use(
   })
 );
 
-registerPlugins(app);
-
-app.use(pinia);
 registerPlugins(app);
 app.mount("#app");
