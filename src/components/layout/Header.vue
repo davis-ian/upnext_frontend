@@ -8,9 +8,7 @@
       <!-- <v-btn @click="searchModal = true" variant="outlined">Search</v-btn>
       <v-btn @click="navModal = true" variant="outlined">More</v-btn> -->
       <v-btn class="ml-2" href="/" variant="outlined">Home</v-btn>
-      <v-btn class="ml-2" href="/user-profile" variant="outlined"
-        >Profile</v-btn
-      >
+      <v-btn class="ml-2" href="/profile" variant="outlined">Profile</v-btn>
       <LoginBtn class="ml-2" v-if="!isAuthenticated" />
       <LogoutBtn class="ml-2" v-if="isAuthenticated" />
       <SignupBtn class="ml-2" v-if="!isAuthenticated"></SignupBtn>
