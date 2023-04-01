@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div v-if="!isLoading && this.lists.length == 0">
+      <v-btn @click="getUserLists()">Check Lists</v-btn>
+    </div>
     <v-list nav>
       <v-list-item
         @click="handleRowClick(list)"
@@ -31,13 +34,7 @@ export default {
       isAuthenticated: this.$auth0.isAuthenticated,
       isLoading: this.$auth0.isLoading,
       lists: [],
-      userId: this.$auth0.user.value["https://nextup.com/userId"],
     };
-  },
-  watch: {
-    userId() {
-      this.getUserLists(this.userId);
-    },
   },
   props: {
     canDelete: {
@@ -61,9 +58,9 @@ export default {
       } else {
         this.getListDetail(item.key);
       }
-      //   console.log("test");
     },
-    getUserLists(id) {
+    getUserLists() {
+      const id = this.user["https://nextup.com/userId"];
       console.log(id, "getting list for id");
       UserListAPI.index(id)
         .then((resp) => {
@@ -86,7 +83,7 @@ export default {
     },
   },
   mounted() {
-    this.getUserLists(this.userId);
+    this.getUserLists();
   },
 };
 </script>

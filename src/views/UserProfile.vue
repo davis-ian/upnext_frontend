@@ -15,9 +15,6 @@
       <v-btn @click="getUserLists(userId)">Get Lists</v-btn>
     </div> -->
     <h4>Your Lists</h4>
-    <div v-if="!isLoading && this.lists.length == 0">
-      <v-btn @click="getUserLists(userId)">Check Lists</v-btn>
-    </div>
     <v-btn @click="creatingList = true">Create +</v-btn>
     <user-lists :canDelete="true" ref="lists" />
 
