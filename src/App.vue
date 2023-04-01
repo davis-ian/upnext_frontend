@@ -14,6 +14,7 @@ import Layout from "@/components/layout/Layout.vue";
 import Snackbar from "@/components/UI/Snackbar.vue";
 import { useSnackbarStore } from "@/stores/snackbar";
 import PageLoader from "@/components/UI/PageLoader.vue";
+import { RouterView } from "vue-router";
 
 export default {
   setup() {
@@ -25,7 +26,7 @@ export default {
       isLoading: this.$auth0.isLoading,
     };
   },
-  components: { Snackbar, Layout, PageLoader },
+  components: { Snackbar, Layout, PageLoader, RouterView },
   mounted() {
     console.log("APP MOUNTED");
   },

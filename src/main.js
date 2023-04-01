@@ -107,7 +107,8 @@ app.use(VueAxios, axios);
 //     );
 //   },
 // });
-registerPlugins(app);
+
+app.use(router);
 app.use(pinia);
 
 app.use(
@@ -120,6 +121,5 @@ app.use(
     },
   })
 );
-app.use(router);
 registerPlugins(app);
 app.mount("#app");
