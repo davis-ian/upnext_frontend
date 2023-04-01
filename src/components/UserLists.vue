@@ -31,9 +31,13 @@ export default {
       isAuthenticated: this.$auth0.isAuthenticated,
       isLoading: this.$auth0.isLoading,
       lists: [],
-
       userId: this.$auth0.user.value["https://nextup.com/userId"],
     };
+  },
+  watch: {
+    userId() {
+      this.getUserLists(this.userId);
+    },
   },
   props: {
     canDelete: {
