@@ -15,6 +15,9 @@
       <v-btn @click="getUserLists(userId)">Get Lists</v-btn>
     </div> -->
     <h4>Your Lists</h4>
+    <div v-if="!isLoading && this.lists.length == 0">
+      <v-btn @click="getUserLists(userId)">Check Lists</v-btn>
+    </div>
     <v-btn @click="creatingList = true">Create +</v-btn>
     <user-lists :canDelete="true" ref="lists" />
 
@@ -37,7 +40,7 @@ export default {
       isAuthenticated: this.$auth0.isAuthenticated,
       isLoading: this.$auth0.isLoading,
       lists: [],
-      userId: this.$auth0.user.value["https://nextup.com/userId"],
+      userId: this.$auth0.user["https://nextup.com/userId"],
       creatingList: false,
       listName: "",
     };
