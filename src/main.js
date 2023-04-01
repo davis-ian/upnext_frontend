@@ -71,11 +71,19 @@ import {
   faBacon,
   faIceCream,
   faDrumstickBite,
+  faX,
 } from "@fortawesome/free-solid-svg-icons";
 
 // import { fa } from "@fortawesome/free-regular-svg-icons";
 
-library.add(faArrowLeft, faBreadSlice, faBacon, faIceCream, faDrumstickBite);
+library.add(
+  faX,
+  faArrowLeft,
+  faBreadSlice,
+  faBacon,
+  faIceCream,
+  faDrumstickBite
+);
 
 // =============================================================================
 // FONT AWESOME CONFIG

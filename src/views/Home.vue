@@ -203,7 +203,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #home {
   background-color: black;
   min-height: 100%;
