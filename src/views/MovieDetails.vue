@@ -9,7 +9,9 @@
           :src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
           :lazy-src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
         ></v-img>
-        <v-btn @click="addToList(movie)">add to list</v-btn>
+        <v-btn v-if="$auth0.isAuthenticated" @click="addToList(movie)"
+          >add to list</v-btn
+        >
       </v-col>
       <v-col
         style="
