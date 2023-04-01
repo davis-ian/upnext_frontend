@@ -3,14 +3,6 @@
     <p>create list</p>
     <v-text-field v-model="listName" label="Name"></v-text-field>
     <v-btn @click="createList">Submit</v-btn>
-
-    <v-btn @click="getUserLists(userId)">get lists</v-btn>
-
-    <v-list>
-      <v-list-item v-for="(list, index) in lists">
-        {{ list.props.name }}
-      </v-list-item>
-    </v-list>
   </div>
 </template>
 <script>

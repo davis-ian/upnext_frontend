@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export default {
+  // List CRUD
   index(params) {
     return axios.get(`${import.meta.env.VITE_APP_MOVIE_API_V4}/lists/`, {
       params: {
@@ -57,5 +58,38 @@ export default {
         },
       })
       .delete(import.meta.env.VITE_APP_MOVIE_API_V4 + `/list/${id}`, {});
+  },
+
+  // List Item CRUD
+  addItems(params) {
+    return axios
+      .create({
+        headers: {
+          Authorization:
+            "Bearer " + import.meta.env.VITE_APP_MOVIE_ACCESS_TOKEN,
+        },
+      })
+      .post(
+        import.meta.env.VITE_APP_MOVIE_API_V4 + `/list/${params.list_id}/items`,
+        params
+      );
+  },
+  removeItems(list_id, items) {
+    let data = {
+      items: items,
+    };
+
+    return axios
+      .create({
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+          Authorization:
+            "Bearer " + import.meta.env.VITE_APP_MOVIE_ACCESS_TOKEN,
+        },
+      })
+      .delete(
+        import.meta.env.VITE_APP_MOVIE_API_V4 + `/list/${list_id}/items`,
+        { data }
+      );
   },
 };

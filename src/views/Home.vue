@@ -96,6 +96,7 @@
 </template>
 <script>
 import MoviesAPI from "@/api/movies";
+import PageLoader from "@/components/UI/PageLoader.vue";
 export default {
   data() {
     return {
@@ -130,6 +131,7 @@ export default {
       ],
     };
   },
+  components: { PageLoader },
   watch: {
     currentCollection() {
       this.currentPage = 1;

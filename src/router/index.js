@@ -6,6 +6,7 @@ import UserProfile from "@/views/UserProfile.vue";
 import MovieDetails from "@/views/MovieDetails.vue";
 import TVDetails from "@/views/TVDetails.vue";
 import CreateList from "@/views/CreateList.vue";
+import ListDetail from "@/views/ListDetail.vue";
 
 const routes = [
   {
@@ -33,6 +34,11 @@ const routes = [
     path: "/list/create",
     name: "CreateList",
     component: CreateList,
+  },
+  {
+    path: "/list/:id",
+    name: "ListDetail",
+    component: ListDetail,
   },
 ];
 

@@ -11,6 +11,7 @@
       <v-btn class="ml-2" href="/profile" variant="outlined">Profile</v-btn>
       <LoginBtn class="ml-2" v-if="!isAuthenticated" />
       <LogoutBtn class="ml-2" v-if="isAuthenticated" />
+      <SignupBtn class="ml-2" v-if="!isAuthenticated"></SignupBtn>
     </v-app-bar>
 
     <!-- Start Nav modal -->
@@ -44,6 +45,7 @@
 <script>
 import LoginBtn from "@/components/LoginBtn.vue";
 import LogoutBtn from "@/components/LogoutBtn.vue";
+import SignupBtn from "@/components/SignupBtn.vue";
 export default {
   data() {
     return {
@@ -55,7 +57,7 @@ export default {
       isLoading: this.$auth0.isLoading,
     };
   },
-  components: { LoginBtn, LogoutBtn },
+  components: { LoginBtn, LogoutBtn, SignupBtn },
   methods: {
     test() {
       console.log(this.isAuthenticated);

@@ -9,6 +9,7 @@
           :src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
           :lazy-src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
         ></v-img>
+        <v-btn @click="addToList(movie)">add to list</v-btn>
       </v-col>
       <v-col
         style="
@@ -60,19 +61,58 @@
         </v-col>
       </v-row>
     </v-row>
+    <v-dialog v-model="listModal">
+      <v-card> lists </v-card>
+      <user-lists
+        :canDelete="false"
+        :customRowClick="true"
+        @row-click="(item) => handleListRowClick(item)"
+        ref="lists"
+      />
+    </v-dialog>
   </div>
 </template>
 <script>
 import MoviesAPI from "@/api/movies";
+import UserLists from "@/components/UserLists.vue";
+import ListAPI from "@/api/tmdb-lists";
 export default {
   data() {
     return {
       movie: null,
       loading: true,
       providers: [],
+      listModal: false,
     };
   },
+  components: { UserLists },
   methods: {
+    handleListRowClick(item) {
+      console.log("row clicked", item);
+      let params = {
+        list_id: item.props.tmdbId,
+        items: [
+          {
+            media_type: "movie",
+            media_id: this.movie.id,
+          },
+        ],
+      };
+
+      ListAPI.addItems(params)
+        .then((resp) => {
+          console.log(resp, "resp");
+        })
+        .catch((error) => {
+          console.log(error, "error");
+        });
+
+      console.log(params);
+    },
+    addToList(movie) {
+      console.log(movie, "movie deets");
+      this.listModal = true;
+    },
     getDetails(id) {
       MoviesAPI.show(id, "/movie/", {}).then((resp) => {
         this.movie = resp.data;

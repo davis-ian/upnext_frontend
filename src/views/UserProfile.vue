@@ -6,31 +6,28 @@
       <v-btn v-if="!isAuthenticated" @click="login">Log in</v-btn>
       <v-btn v-if="isAuthenticated" @click="logout">Log out</v-btn>
       <pre v-if="isAuthenticated">
-                <code>{{ user }}</code>
-            </pre>
-
-      <!-- <v-btn color="red" @click="toggleListPrivacy">Toggle</v-btn> -->
+            <code>{{ user }}</code>
+        </pre>
     </div>
 
-    <div style="border: 2px solid">
+    <!-- <div style="border: 2px solid">
       <h3>Lists</h3>
-      <v-btn href="/list/create">Create +</v-btn>
       <v-btn @click="getUserLists(userId)">Get Lists</v-btn>
-    </div>
+    </div> -->
     <h4>Your Lists</h4>
-    <v-list nav>
-      <v-list-item
-        elevation="2"
-        v-for="(list, index) in lists"
-        :key="index"
-        :value="list"
-        active-color="primary"
-        >{{ list.props.name }}</v-list-item
-      >
-    </v-list>
+    <v-btn @click="creatingList = true">Create +</v-btn>
+    <user-lists :canDelete="true" ref="lists" />
+
+    <v-dialog v-model="creatingList">
+      <v-card>
+        <v-text-field v-model="listName" label="Name"></v-text-field>
+        <v-btn @click="createList">Submit</v-btn>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
+import UserLists from "@/components/UserLists.vue";
 import ListAPI from "@/api/tmdb-lists";
 import UserListAPI from "@/api/lists";
 export default {
@@ -41,8 +38,11 @@ export default {
       isLoading: this.$auth0.isLoading,
       lists: [],
       userId: this.$auth0.user.value["https://nextup.com/userId"],
+      creatingList: false,
+      listName: "",
     };
   },
+  components: { UserLists },
   methods: {
     login() {
       console.log("logging in");
@@ -53,17 +53,6 @@ export default {
         // returnTo: window.location.origin,
         returnTo: "/",
       });
-    },
-    getUserLists(id) {
-      console.log(id, "getting list for id");
-      UserListAPI.index(id)
-        .then((resp) => {
-          console.log(resp, "user lists");
-          this.lists = resp.data;
-        })
-        .catch((err) => {
-          console.log(err, "error");
-        });
     },
     toggleListPrivacy() {
       console.log(this.list.public);
@@ -77,10 +66,26 @@ export default {
           console.log(err, "list update error");
         });
     },
-  },
-  mounted() {
-    console.log("profile mounted");
-    console.log(this.$auth0.user);
+    createList(name) {
+      if (this.listName.length == 0) {
+        console.log("name required");
+        return;
+      }
+      if (!this.userId > 0) {
+        console.log("no user id");
+        console.log(this.userId);
+        console.log(this.$auth0);
+        return;
+      }
+      UserListAPI.create(this.listName, this.userId)
+        .then((resp) => {
+          this.creatingList = false;
+          this.$refs.lists.getUserLists(this.userId);
+        })
+        .catch((error) => {
+          console.log(error, "error");
+        });
+    },
   },
 };
 </script>
