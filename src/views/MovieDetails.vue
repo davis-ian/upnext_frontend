@@ -9,7 +9,7 @@
           :src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
           :lazy-src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
         ></v-img>
-        <v-btn v-if="$auth0.isAuthenticated" @click="addToList(movie)"
+        <v-btn v-if="isAuthenticated" @click="addToList(movie)"
           >add to list</v-btn
         >
       </v-col>
@@ -85,6 +85,7 @@ export default {
       loading: true,
       providers: [],
       listModal: false,
+      isAuthenticated: this.$auth0.isAuthenticated,
     };
   },
   components: { UserLists },
