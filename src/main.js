@@ -112,7 +112,7 @@ app.use(
     domain: import.meta.env.VITE_APP_AUTH0_DOMAIN,
     clientId: import.meta.env.VITE_APP_AUTH0_CLIENT_ID,
     authorizationParams: {
-      redirect_uri: window.location.pathname,
+      redirect_uri: window.location.origin,
       audience: import.meta.env.VITE_APP_AUD,
     },
   })
