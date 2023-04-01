@@ -18,7 +18,6 @@ const routes = [
     path: "/profile",
     name: "Profile",
     component: UserProfile,
-    beforeEnter: authGuard,
   },
   {
     path: "/movie/:id",
