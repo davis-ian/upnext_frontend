@@ -66,6 +66,8 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 // FONT AWESOME ICONS
 // =============================================================================
 import {
+  faList,
+  faTrash,
   faRightFromBracket,
   faUser,
   faHouse,
@@ -80,6 +82,8 @@ import {
 // import { fa } from "@fortawesome/free-regular-svg-icons";
 
 library.add(
+  faList,
+  faTrash,
   faRightFromBracket,
   faUser,
   faHouse,

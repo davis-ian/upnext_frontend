@@ -5,21 +5,25 @@
     </div>
     <v-list nav>
       <v-list-item
+        class="mb-2"
+        style="border: 1px solid #e5e5e5; border-radius: 40px"
         @click="handleRowClick(list)"
-        elevation="2"
         v-for="(list, index) in lists"
         :key="index"
         :value="list"
         active-color="primary"
         >{{ list.props.name }}
-        <template v-if="canDelete" v-slot:append>
+        <!-- <template v-if="canDelete" v-slot:append>
           <v-btn
             @click.stop="deleteList(list.props.tmdbId, list.key)"
-            color="grey-lighten-1"
-            icon="mdi-information"
             variant="text"
-          ></v-btn>
-        </template>
+            icon
+            density="compact"
+            class="delete-btn"
+          >
+            <font-awesome-icon icon="fa-solid fa-trash"></font-awesome-icon>
+          </v-btn>
+        </template> -->
       </v-list-item>
     </v-list>
   </div>
@@ -87,4 +91,11 @@ export default {
   },
 };
 </script>
-<style lang=""></style>
+<style lang="scss" scoped>
+.delete-btn {
+  opacity: 0.4;
+}
+.delete-btn:hover {
+  opacity: 1;
+}
+</style>

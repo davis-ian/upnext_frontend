@@ -1,19 +1,42 @@
 <template>
   <div class="pa-3">
-    <!-- <span>id - {{ $route.params }}</span> -->
     <div v-if="list">
-      <h1>{{ list.name }}</h1>
+      <div style="display: flex; justify-content: space-between">
+        <h1>{{ list.name }}</h1>
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props">...</v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="(item, index) in menuItems"
+              :key="index"
+              @click="handleMenuClick(index)"
+            >
+              <template v-slot:prepend>
+                <div style="width: 2rem">
+                  <font-awesome-icon :icon="item.icon"></font-awesome-icon>
+                </div>
+              </template>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
 
       <div>
         <v-row>
-          <v-col cols="3" v-for="(result, index) in list.results">
+          <v-col
+            @click="goToDetails(result)"
+            cols="12"
+            v-for="(result, index) in list.results"
+          >
             <!-- <span>{{ result.title }}</span> -->
             <div>
-              <v-hover>
-                <template v-slot:default="{ isHovering, props }">
-                  <div class="img-wrap" v-bind="props">
+              <v-row>
+                <v-col>
+                  <div style="position: relative">
                     <v-img
-                      @click="goToDetails(result)"
                       class="img"
                       max-height="100%"
                       :src="
@@ -46,8 +69,20 @@
                       </v-btn>
                     </v-img>
                   </div>
-                </template>
-              </v-hover>
+                </v-col>
+                <v-col>
+                  <h4>{{ result.title }}</h4>
+                  <p>
+                    {{ new Date(result.release_date).toLocaleDateString() }}
+                  </p>
+                  <v-progress-circular
+                    :model-value="result.vote_average * 10"
+                    :color="getProgressColor(result.vote_average * 10)"
+                  >
+                    {{ result.vote_average * 10 }}
+                  </v-progress-circular>
+                </v-col>
+              </v-row>
             </div>
           </v-col>
         </v-row>
@@ -75,6 +110,28 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <v-dialog max-width="500px" v-model="listDeleteConfirmationModal">
+        <v-card>
+          <v-card-item>
+            <v-card-title>Delete List</v-card-title>
+          </v-card-item>
+          <v-card-text
+            >Are you sure you want to delete <strong>{{ list.name }}</strong
+            >? This cannot be undone.</v-card-text
+          >
+          <v-card-actions class="px-4">
+            <v-btn @click="listDeleteConfirmationModal = false">Cancel</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn
+              @click="deleteList(list.id, $route.params.id)"
+              variant="outlined"
+              color="red"
+              >Confirm</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
   </div>
 </template>
@@ -88,9 +145,43 @@ export default {
       list: null,
       selectedItem: null,
       deleteConfirmModal: false,
+      listDeleteConfirmationModal: false,
+      menuItems: [{ title: "Delete", icon: "fa-solid fa-trash" }],
     };
   },
   methods: {
+    handleMenuClick(val) {
+      switch (val) {
+        case 0:
+          this.listDeleteStep1();
+          break;
+      }
+    },
+    getProgressColor(val) {
+      if (val > 70) {
+        return "#01c6ac";
+      } else if (val > 50) {
+        return "#FFDE03";
+      } else {
+        return "#b00020";
+      }
+    },
+    listDeleteStep1() {
+      console.log("deleting", this.list);
+      this.listDeleteConfirmationModal = true;
+    },
+    deleteList(id, key) {
+      console.log(id);
+      console.log(key);
+      UserListAPI.delete(id, key)
+        .then((resp) => {
+          console.log("deleted");
+          this.$router.push("/profile");
+        })
+        .catch((error) => {
+          console.log(error, "error");
+        });
+    },
     goToDetails(item) {
       if (item.hasOwnProperty("first_air_date")) {
         console.log("this is a tv show");
@@ -139,16 +230,17 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.img-wrap {
-  transition: 0.3s;
-  // border: 2px solid red;
-  border-radius: 10px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-  .img {
-    border-radius: 10px;
-    cursor: pointer;
-  }
-}
+// .img-wrap {
+//   transition: 0.3s;
+//   // border: 2px solid red;
+//   border-radius: 10px;
+//   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+//   .img {
+//     border-radius: 10px;
+//     cursor: pointer;
+//   }
+// }
+
 .delete-btn {
   opacity: 0;
   position: absolute;

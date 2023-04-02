@@ -1,16 +1,43 @@
 <template>
-  <div>
-    <div v-if="isLoading">Loading...</div>
-    <div v-else>
-      <h2>User Profile</h2>
-      <v-btn v-if="!isAuthenticated" @click="login">Log in</v-btn>
-      <v-btn v-if="isAuthenticated" @click="logout">Log out</v-btn>
-      <pre v-if="isAuthenticated">
+  <div class="pa-3">
+    <h2 class="pa-3">Profile</h2>
+    <!-- <pre
+      style="display: block; background-color: black; color: white"
+      v-if="isAuthenticated"
+    >
             <code>{{ user }}</code>
-        </pre>
-    </div>
+        </pre> -->
 
-    <h4>Your Lists</h4>
+    <v-table>
+      <tbody>
+        <tr v-if="userRoles.includes('SuperAdmin')">
+          <td>Id</td>
+          <td>{{ user["https://nextup.com/userId"] }}</td>
+        </tr>
+        <tr v-if="userRoles.includes('SuperAdmin')">
+          <td>Roles</td>
+          <td>{{ user["https://nextup.com/roles"] }}</td>
+        </tr>
+        <tr v-if="userRoles.includes('SuperAdmin')">
+          <td>Auth0</td>
+          <td>{{ user.sub }}</td>
+        </tr>
+        <tr>
+          <td>Name</td>
+          <td>{{ user.nickname }}</td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>{{ user.email }}</td>
+        </tr>
+        <tr>
+          <td>Email Verified</td>
+          <td>{{ user.email_verified }}</td>
+        </tr>
+      </tbody>
+    </v-table>
+
+    <h2 class="pa-3">Lists</h2>
     <v-btn @click="creatingList = true">Create +</v-btn>
     <user-lists :canDelete="true" ref="lists" />
 
@@ -36,6 +63,7 @@ export default {
       userId: this.$auth0.user.value["https://nextup.com/userId"],
       creatingList: false,
       listName: "",
+      userRoles: this.$auth0.user.value["https://nextup.com/roles"],
     };
   },
   components: { UserLists },

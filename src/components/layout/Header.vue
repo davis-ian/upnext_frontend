@@ -99,6 +99,7 @@ export default {
       if (this.isAuthenticated) {
         return [
           { label: "Home", route: "/", icon: "fa-solid fa-house" },
+          { label: "Lists", route: "/lists", icon: "fa-solid fa-list" },
           { label: "Profile", route: "/profile", icon: "fa-solid fa-user" },
           {
             label: "Logout",

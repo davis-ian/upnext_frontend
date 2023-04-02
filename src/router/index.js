@@ -9,6 +9,7 @@ import TVDetails from "@/views/TVDetails.vue";
 import CreateList from "@/views/CreateList.vue";
 import ListDetail from "@/views/ListDetail.vue";
 import TestCompVue from "@/views/TestComp.vue";
+import Lists from "@/views/Lists.vue";
 
 const routes = [
   {
@@ -46,6 +47,12 @@ const routes = [
     path: "/test",
     name: "TestComp",
     component: TestCompVue,
+  },
+  {
+    path: "/lists",
+    name: "Lists",
+    component: Lists,
+    beforeEnter: authGuard,
   },
 ];
 
