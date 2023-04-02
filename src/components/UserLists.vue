@@ -26,6 +26,18 @@
         </template> -->
       </v-list-item>
     </v-list>
+
+    <v-dialog v-model="creatingList">
+      <v-card class="pa-3">
+        <v-text-field
+          autofocus
+          @keydown.enter="createList(listName, userId)"
+          v-model="listName"
+          label="Name"
+        ></v-text-field>
+        <v-btn @click="createList(listName, userId)">Submit</v-btn>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -38,6 +50,9 @@ export default {
       isAuthenticated: this.$auth0.isAuthenticated,
       isLoading: this.$auth0.isLoading,
       lists: [],
+      creatingList: false,
+      listName: "",
+      userId: this.$auth0.user.value["https://nextup.com/userId"],
     };
   },
   props: {
@@ -80,6 +95,26 @@ export default {
         .then((resp) => {
           console.log("deleted");
           this.getUserLists(this.userId);
+        })
+        .catch((error) => {
+          console.log(error, "error");
+        });
+    },
+    createList(name, userId) {
+      if (name.length == 0) {
+        console.log("name required");
+        return;
+      }
+      if (!userId > 0) {
+        console.log("no user id");
+        console.log(userId);
+        console.log(this.$auth0.user.value["https://nextup.com/userId"]);
+        return;
+      }
+      UserListAPI.create(name, userId)
+        .then((resp) => {
+          this.creatingList = false;
+          this.getUserLists();
         })
         .catch((error) => {
           console.log(error, "error");

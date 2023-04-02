@@ -1,7 +1,13 @@
 <template>
   <div>
-    <h2 class="pa-3">Lists</h2>
-    <user-lists />
+    <div
+      class="pa-3"
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
+      <h2>Lists</h2>
+      <v-btn @click="newList" icon>+</v-btn>
+    </div>
+    <user-lists ref="listComp" />
   </div>
 </template>
 <script>
@@ -14,6 +20,11 @@ export default {
   },
   components: {
     UserLists,
+  },
+  methods: {
+    newList() {
+      this.$refs.listComp.creatingList = true;
+    },
   },
 };
 </script>

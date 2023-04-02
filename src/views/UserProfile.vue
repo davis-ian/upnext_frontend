@@ -38,7 +38,7 @@
     </v-table>
 
     <h2 class="pa-3">Lists</h2>
-    <v-btn @click="creatingList = true">Create +</v-btn>
+    <!-- <v-btn @click="creatingList = true">Create +</v-btn> -->
     <user-lists :canDelete="true" ref="lists" />
 
     <v-dialog v-model="creatingList">

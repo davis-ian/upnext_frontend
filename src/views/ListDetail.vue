@@ -31,7 +31,6 @@
             cols="12"
             v-for="(result, index) in list.results"
           >
-            <!-- <span>{{ result.title }}</span> -->
             <div>
               <v-row>
                 <v-col>
