@@ -175,7 +175,7 @@ export default {
       UserListAPI.delete(id, key)
         .then((resp) => {
           console.log("deleted");
-          this.$router.push("/profile");
+          this.$router.push("/lists");
         })
         .catch((error) => {
           console.log(error, "error");
