@@ -1,7 +1,9 @@
 <template>
-  <Header />
-  <slot />
-  <!-- <Footer /> -->
+  <div class="layout-wrap">
+    <Header />
+    <slot />
+    <!-- <Footer /> -->
+  </div>
 </template>
 <script>
 import Header from "@/components/layout/Header.vue";
@@ -14,4 +16,4 @@ export default {
   },
 };
 </script>
-<style lang=""></style>
+<style lang="scss" scoped></style>

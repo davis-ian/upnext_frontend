@@ -1,6 +1,6 @@
 <template>
-  <v-app>
-    <v-main>
+  <v-app id="app">
+    <v-main id="main">
       <Layout>
         <router-view />
         <page-loader v-if="isLoading" />
@@ -33,4 +33,20 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+#main {
+  // overflow-x: hidden;
+  // border: 2px solid orange;
+  height: 100vh;
+}
+// #app {
+//   border: 2px solid blue;
+// }
+
+@media only screen and (max-width: 700px) {
+  #main {
+    overflow-x: hidden;
+    // border: 2px solid red;
+  }
+}
+</style>

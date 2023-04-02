@@ -1,6 +1,6 @@
 <template>
   <div id="home">
-    <div class="pa-3">
+    <!-- <div class="pa-3">
       <v-btn
         v-for="sel in collections"
         class="mr-3"
@@ -9,14 +9,14 @@
         @click="currentCollection = sel.value"
         >{{ sel.name }}</v-btn
       >
-    </div>
+    </div> -->
 
     <div>
       <div class="text-center pa-5">
         <h1 style="color: white">{{ collections[currentCollection].name }}</h1>
       </div>
 
-      <div style="display: flex; justify-content: center">
+      <!-- <div style="display: flex; justify-content: center">
         <v-text-field
           style="max-width: 500px"
           density="compact"
@@ -35,9 +35,9 @@
           @click="startSearch"
           >search</v-btn
         >
-      </div>
+      </div> -->
 
-      <v-row class="pa-3">
+      <v-row class="pa-5">
         <v-col
           cols="12"
           sm="4"
@@ -76,7 +76,6 @@
                 </div>
               </template>
             </v-hover>
-            <!-- <p class="text-center">{{ result.name || result.title }}</p> -->
           </div>
         </v-col>
       </v-row>
@@ -84,12 +83,12 @@
         <!-- {{ currentPage }} -->
         <!-- @prev="getResults(this.collections[this.currentCollection].endpoint)"
         @next="getResults(this.collections[this.currentCollection].endpoint)" -->
-        <v-pagination
+        <!-- <v-pagination
           v-if="totalPages > 0"
           v-model="currentPage"
           :total-visible="6"
           :length="totalPages"
-        ></v-pagination>
+        ></v-pagination> -->
       </div>
     </div>
   </div>
@@ -205,7 +204,7 @@ export default {
 
 <style lang="scss" scoped>
 #home {
-  background-color: black;
+  // background-color: black;
   min-height: 100%;
 }
 .img-wrap {

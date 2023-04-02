@@ -10,10 +10,6 @@
         </pre>
     </div>
 
-    <!-- <div style="border: 2px solid">
-      <h3>Lists</h3>
-      <v-btn @click="getUserLists(userId)">Get Lists</v-btn>
-    </div> -->
     <h4>Your Lists</h4>
     <v-btn @click="creatingList = true">Create +</v-btn>
     <user-lists :canDelete="true" ref="lists" />
@@ -21,7 +17,7 @@
     <v-dialog v-model="creatingList">
       <v-card>
         <v-text-field v-model="listName" label="Name"></v-text-field>
-        <v-btn @click="createList">Submit</v-btn>
+        <v-btn @click="createList(listName, userId)">Submit</v-btn>
       </v-card>
     </v-dialog>
   </div>
@@ -37,7 +33,7 @@ export default {
       isAuthenticated: this.$auth0.isAuthenticated,
       isLoading: this.$auth0.isLoading,
       lists: [],
-      userId: this.$auth0.user["https://nextup.com/userId"],
+      userId: this.$auth0.user.value["https://nextup.com/userId"],
       creatingList: false,
       listName: "",
     };
@@ -45,12 +41,10 @@ export default {
   components: { UserLists },
   methods: {
     login() {
-      console.log("logging in");
       this.$auth0.loginWithRedirect();
     },
     logout() {
       this.$auth0.logout({
-        // returnTo: window.location.origin,
         returnTo: "/",
       });
     },
@@ -66,21 +60,21 @@ export default {
           console.log(err, "list update error");
         });
     },
-    createList(name) {
-      if (this.listName.length == 0) {
+    createList(name, userId) {
+      if (name.length == 0) {
         console.log("name required");
         return;
       }
-      if (!this.userId > 0) {
+      if (!userId > 0) {
         console.log("no user id");
-        console.log(this.userId);
-        console.log(this.$auth0);
+        console.log(userId);
+        console.log(this.$auth0.user.value["https://nextup.com/userId"]);
         return;
       }
-      UserListAPI.create(this.listName, this.userId)
+      UserListAPI.create(name, userId)
         .then((resp) => {
           this.creatingList = false;
-          this.$refs.lists.getUserLists(this.userId);
+          this.$refs.lists.getUserLists(userId);
         })
         .catch((error) => {
           console.log(error, "error");
