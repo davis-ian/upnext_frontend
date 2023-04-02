@@ -4,7 +4,7 @@
       <v-btn
         v-for="sel in collections"
         class="mr-3"
-        :variant="currentCollection == sel.value ? 'flat' : 'outlined'"
+        :variant="currentCollection == sel.value ? 'tonal' : 'outlined'"
         @click="currentCollection = sel.value"
         >{{ sel.name }}</v-btn
       >
