@@ -120,7 +120,7 @@ export default {
       console.log(item);
       switch (item.route) {
         case "/login":
-          this.login;
+          this.login();
           break;
         case "/logout":
           this.logout();
