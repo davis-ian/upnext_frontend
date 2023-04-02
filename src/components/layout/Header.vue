@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar elevation="0" color="transparent">
+    <v-app-bar elevation="0" color="black">
       <v-app-bar-title @click="$router.push('/')">UpNext</v-app-bar-title>
       <!-- <v-spacer></v-spacer> -->
       <span class="mr-2" v-if="isAuthenticated"
@@ -20,7 +20,10 @@
       <!-- <LogoutBtn class="mr-2" v-if="isAuthenticated" />
       <LoginBtn class="mr-2" v-if="!isAuthenticated" /> -->
       <!-- <SignupBtn class="mr-2" v-if="!isAuthenticated"></SignupBtn> -->
-      <v-app-bar-nav-icon @click="toggleDropDown"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon
+        theme="dark"
+        @click="toggleDropDown"
+      ></v-app-bar-nav-icon>
     </v-app-bar>
 
     <!-- Start Nav modal -->

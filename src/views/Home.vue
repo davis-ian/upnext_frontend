@@ -1,22 +1,25 @@
 <template>
   <div id="home">
-    <!-- <div class="pa-3">
+    <div style="display: flex; flex-wrap: wrap; gap: 10px" class="pa-5">
       <v-btn
         v-for="sel in collections"
         class="mr-3"
-        color="#23D9A5"
         :variant="currentCollection == sel.value ? 'flat' : 'outlined'"
         @click="currentCollection = sel.value"
         >{{ sel.name }}</v-btn
       >
-    </div> -->
+    </div>
 
     <div>
-      <div class="text-center pa-5">
-        <h1 style="color: white">{{ collections[currentCollection].name }}</h1>
+      <div class="text-center px-5">
+        <h1>{{ collections[currentCollection].name }}</h1>
       </div>
 
-      <!-- <div style="display: flex; justify-content: center">
+      <div
+        v-if="currentCollection == 3"
+        style="display: flex; justify-content: center"
+        class="pa-5"
+      >
         <v-text-field
           style="max-width: 500px"
           density="compact"
@@ -28,14 +31,10 @@
           dense
         >
         </v-text-field>
-        <v-btn
-          style="height: 40px"
-          class="ml-2"
-          color="#23d9a5"
-          @click="startSearch"
+        <v-btn style="height: 40px" class="ml-2" @click="startSearch"
           >search</v-btn
         >
-      </div> -->
+      </div>
 
       <v-row class="pa-5">
         <v-col
