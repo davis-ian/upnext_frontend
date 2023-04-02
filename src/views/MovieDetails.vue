@@ -1,17 +1,21 @@
 <template>
   <div class="pa-3">
-    <h1>Details</h1>
-    <v-btn href="/">Back</v-btn>
-    <v-row v-if="movie">
+    <!-- <h1>Details</h1> -->
+    <div style="display: flex; justify-content: space-between" class="pa-3">
+      <v-btn variant="tonal" href="/"
+        ><font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon
+      ></v-btn>
+      <v-btn variant="tonal" v-if="isAuthenticated" @click="addToList(movie)"
+        >add to list</v-btn
+      >
+    </div>
+    <v-row class="pa-3" v-if="movie">
       <v-col cols="12">
         <v-img
           height="500px"
           :src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
           :lazy-src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
         ></v-img>
-        <v-btn v-if="isAuthenticated" @click="addToList(movie)"
-          >add to list</v-btn
-        >
       </v-col>
       <v-col
         style="
@@ -32,11 +36,26 @@
         </div>
       </v-col>
       <!-- {{ providers }} -->
-      <v-row class="pa-3" v-if="providers?.flatrate">
-        <v-col cols="12">
+      <v-row class="pa-3">
+        <v-col v-if="providers?.flatrate" cols="12">
           <h4>Stream</h4>
+          <div v-for="(provider, index) in providers?.flatrate">
+            <span>{{ provider.provider_name }}</span>
+            <v-divider
+              v-if="index != providers?.flatrate.length - 1"
+            ></v-divider>
+          </div>
         </v-col>
-        <v-col class="text-center" v-for="provider in providers?.flatrate">
+        <v-col v-if="providers?.buy" cols="12">
+          <h4>Buy</h4>
+          <div v-for="(provider, index) in providers?.buy">
+            <span>{{ provider.provider_name }}</span>
+            <v-divider
+              v-if="index != providers?.flatrate.length - 1"
+            ></v-divider>
+          </div>
+        </v-col>
+        <!-- <v-col class="text-center" v-for="provider in providers?.flatrate">
           <v-img
             height="100px"
             :src="'https://image.tmdb.org/t/p/original/' + provider.logo_path"
@@ -45,9 +64,9 @@
             "
           ></v-img>
           <span>{{ provider.provider_name }}</span>
-        </v-col>
+        </v-col> -->
       </v-row>
-      <v-row class="pa-3" v-if="providers?.buy">
+      <!-- <v-row class="pa-3" v-if="providers?.buy">
         <v-col cols="12">
           <h4>Buy</h4>
         </v-col>
@@ -61,16 +80,18 @@
           ></v-img>
           <span>{{ provider.provider_name }}</span>
         </v-col>
-      </v-row>
+      </v-row> -->
     </v-row>
     <v-dialog v-model="listModal">
-      <v-card> lists </v-card>
-      <user-lists
-        :canDelete="false"
-        :customRowClick="true"
-        @row-click="(item) => handleListRowClick(item)"
-        ref="lists"
-      />
+      <v-card>
+        <v-card-title>Your Lists</v-card-title>
+        <user-lists
+          :canDelete="false"
+          :customRowClick="true"
+          @row-click="(item) => handleListRowClick(item)"
+          ref="lists"
+        />
+      </v-card>
     </v-dialog>
   </div>
 </template>

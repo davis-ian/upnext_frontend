@@ -1,8 +1,14 @@
 <template>
   <div class="pa-3">
-    <h1>Details</h1>
-    <v-btn href="/">Back</v-btn>
-    <v-row align-content="stretch" v-if="movie">
+    <div class="pa-3" style="display: flex; justify-content: space-between">
+      <v-btn variant="tonal" href="/"
+        ><font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon
+      ></v-btn>
+      <v-btn variant="tonal" v-if="isAuthenticated" @click="addToList(movie)"
+        >add to list</v-btn
+      >
+    </div>
+    <v-row class="pa-3" v-if="movie">
       <v-col style="display: flex; justify-content: center" cols="12">
         <v-img
           height="500px"
@@ -29,73 +35,93 @@
         </div>
       </v-col>
       <!-- {{ providers }} -->
-      <v-row class="pa-3" v-if="providers?.flatrate">
-        <v-col cols="12">
+      <v-row class="pa-3">
+        <v-col v-if="providers?.flatrate" cols="12">
           <h4>Stream</h4>
+          <div v-for="(provider, index) in providers?.flatrate">
+            <span>{{ provider.provider_name }}</span>
+            <v-divider
+              v-if="index != providers?.flatrate.length - 1"
+            ></v-divider>
+          </div>
         </v-col>
-        <v-col class="text-center" v-for="provider in providers?.flatrate">
-          <v-img
-            height="100px"
-            :src="'https://image.tmdb.org/t/p/original/' + provider.logo_path"
-            :lazy-src="
-              'https://image.tmdb.org/t/p/original/' + provider.logo_path
-            "
-          ></v-img>
-          <span>{{ provider.provider_name }}</span>
-        </v-col>
-      </v-row>
-      <v-row v-if="providers?.buy">
-        <h4>Buy</h4>
-        <v-col v-for="provider in providers?.buy">
-          <v-img
-            height="100px"
-            width="100px"
-            :src="'https://image.tmdb.org/t/p/original/' + provider.logo_path"
-            :lazy-src="
-              'https://image.tmdb.org/t/p/original/' + provider.logo_path
-            "
-          ></v-img>
-          <span>{{ provider.provider_name }}</span>
+        <v-col v-if="providers?.buy" cols="12">
+          <h4>Buy</h4>
+          <div v-for="(provider, index) in providers?.buy">
+            <span>{{ provider.provider_name }}</span>
+            <v-divider
+              v-if="index != providers?.flatrate.length - 1"
+            ></v-divider>
+          </div>
         </v-col>
       </v-row>
     </v-row>
+    <v-dialog v-model="listModal">
+      <v-card>
+        <v-card-title>Your Lists</v-card-title>
+        <user-lists
+          :canDelete="false"
+          :customRowClick="true"
+          @row-click="(item) => handleListRowClick(item)"
+          ref="lists"
+        />
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
+import MoviesAPI from "@/api/movies";
+import UserLists from "@/components/UserLists.vue";
+import ListAPI from "@/api/tmdb-lists";
 export default {
   data() {
     return {
       movie: null,
       loading: true,
       providers: [],
+      listModal: false,
+      isAuthenticated: this.$auth0.isAuthenticated,
     };
   },
+  components: { UserLists },
   methods: {
-    getDetails(id) {
-      console.log(id);
-      this.axios
-        .get(
-          import.meta.env.VITE_APP_MOVIE_API +
-            `/tv/${id}?api_key=${import.meta.env.VITE_APP_MOVIE_API_KEY}`
-        )
+    handleListRowClick(item) {
+      console.log("row clicked", item);
+      let params = {
+        list_id: item.props.tmdbId,
+        items: [
+          {
+            media_type: "movie",
+            media_id: this.movie.id,
+          },
+        ],
+      };
+
+      ListAPI.addItems(params)
         .then((resp) => {
-          console.log(resp, "details success");
-          this.movie = resp.data;
-          console.log(this.movie);
+          console.log(resp, "resp");
+        })
+        .catch((error) => {
+          console.log(error, "error");
         });
+
+      console.log(params);
+    },
+    addToList(movie) {
+      console.log(movie, "movie deets");
+      this.listModal = true;
+    },
+    getDetails(id) {
+      MoviesAPI.show(id, "/tv/", {}).then((resp) => {
+        console.log(resp, "success");
+        this.movie = resp.data;
+      });
     },
     getWatchProviders(id) {
-      this.axios
-        .get(
-          import.meta.env.VITE_APP_MOVIE_API +
-            `/tv/${id}/watch/providers?api_key=${
-              import.meta.env.VITE_APP_MOVIE_API_KEY
-            }`
-        )
-        .then((resp) => {
-          this.providers = resp.data.results.US;
-          console.log(this.providers, "providers");
-        });
+      MoviesAPI.indexProviders(id, "tv", {}).then((resp) => {
+        this.providers = resp.data.results.US;
+        console.log(this.providers, "prov");
+      });
     },
   },
   mounted() {
