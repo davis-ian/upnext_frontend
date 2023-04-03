@@ -11,6 +11,11 @@ import ListDetail from "@/views/ListDetail.vue";
 import TestCompVue from "@/views/TestComp.vue";
 import Lists from "@/views/Lists.vue";
 
+const extendedAuthGuard = async (to) => {
+  const response = await authGuard(to);
+  console.log(response, "authGuard resp");
+};
+
 const routes = [
   {
     path: "/",
@@ -21,7 +26,7 @@ const routes = [
     path: "/profile",
     name: "Profile",
     component: UserProfile,
-    beforeEnter: authGuard,
+    beforeEnter: extendedAuthGuard,
   },
   {
     path: "/movie/:id",
@@ -52,7 +57,7 @@ const routes = [
     path: "/lists",
     name: "Lists",
     component: Lists,
-    beforeEnter: authGuard,
+    beforeEnter: extendedAuthGuard,
   },
 ];
 
