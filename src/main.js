@@ -44,6 +44,7 @@ import router from "@/router";
 // =============================================================================
 import { createApp } from "vue";
 import { createPinia } from "pinia";
+// import pinia from "@/stores/user";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -55,7 +56,6 @@ import { createAuth0 } from "@auth0/auth0-vue";
 // import { Auth0Plugin } from "./auth/auth0-plugin";
 import axios from "axios";
 import VueAxios from "vue-axios";
-
 // =============================================================================
 // FONT AWESOME CORE
 // =============================================================================
@@ -134,11 +134,13 @@ app.use(
     domain: import.meta.env.VITE_APP_AUTH0_DOMAIN,
     clientId: import.meta.env.VITE_APP_AUTH0_CLIENT_ID,
     useRefreshTokens: true,
+    cacheLocation: "localstorage",
     authorizationParams: {
       redirect_uri: window.location.origin,
       audience: import.meta.env.VITE_APP_AUD,
     },
   })
 );
+
 registerPlugins(app);
 app.mount("#app");
