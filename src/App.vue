@@ -4,6 +4,7 @@
       <Layout>
         <router-view />
         <page-loader v-if="isLoading" />
+        <snackbar />
       </Layout>
     </v-main>
   </v-app>
@@ -12,20 +13,19 @@
 <script>
 import Layout from "@/components/layout/Layout.vue";
 import Snackbar from "@/components/UI/Snackbar.vue";
-import { useSnackbarStore } from "@/stores/snackbar";
+// import { useSnackbarStore } from "@/stores/snackbar";
 import PageLoader from "@/components/UI/PageLoader.vue";
 import { RouterView } from "vue-router";
 
 export default {
-  setup() {
-    const snackbarStore = useSnackbarStore();
-    return { snackbarStore };
-  },
   data() {
     return {
+      isAuthenticated: this.$auth0.isAuthenticated,
       isLoading: this.$auth0.isLoading,
+      user: this.$auth0.user,
     };
   },
+  methods: {},
   components: { Snackbar, Layout, PageLoader, RouterView },
   mounted() {
     console.log("APP MOUNTED");

@@ -9,7 +9,6 @@
         >{{ sel.name }}</v-btn
       >
     </div>
-
     <div>
       <div class="text-center px-5">
         <h1>{{ collections[currentCollection].name }}</h1>
@@ -79,15 +78,13 @@
         </v-col>
       </v-row>
       <div>
-        <!-- {{ currentPage }} -->
-        <!-- @prev="getResults(this.collections[this.currentCollection].endpoint)"
-        @next="getResults(this.collections[this.currentCollection].endpoint)" -->
-        <!-- <v-pagination
-          v-if="totalPages > 0"
-          v-model="currentPage"
-          :total-visible="6"
-          :length="totalPages"
-        ></v-pagination> -->
+        <div class="pa-3 text-center">
+          <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
+          <!-- <span style="font-size: 0.9rem" id="target"
+            >{{ results.length }} of {{ totalPages * 20 }}</span
+          > -->
+          <span style="font-size: 0.9rem" id="target"></span>
+        </div>
       </div>
     </div>
   </div>
@@ -105,6 +102,7 @@ export default {
       searchText: "",
       currentCollection: 0,
       loading: true,
+      observer: null,
       collections: [
         {
           value: 0,
@@ -158,13 +156,19 @@ export default {
       }
     },
     getResults(collection) {
+      console.log("getting results", this.currentPage);
       this.loading = true;
       MoviesAPI.index(collection, {
         with_origin_country: "US",
         page: this.currentPage,
       })
         .then((resp) => {
-          this.results = resp.data.results;
+          if (this.currentPage > 1) {
+            this.results = this.results.concat(resp.data.results);
+          } else {
+            this.results = resp.data.results;
+          }
+
           this.totalPages = resp.data.total_pages;
         })
         .catch((error) => {
@@ -193,10 +197,34 @@ export default {
           this.loading = false;
         });
     },
+    handleIntersect(entries, observer) {
+      console.log("intersected", entries);
+      if (entries[0].isIntersecting) {
+        this.currentPage++;
+      }
+      // this.getResults(this.collections[this.currentCollection].endpoint);
+    },
+    initObserver() {
+      let options = {
+        root: null,
+        rootMargin: "0px",
+        threshold: 1.0,
+      };
+
+      this.observer = new IntersectionObserver(this.handleIntersect, options);
+      let target = document.querySelector("#target");
+      if (target) {
+        this.observer.observe(target);
+      }
+    },
   },
   async mounted() {
-    console.log(this.$auth0, "auth");
+    console.log("mounted");
+    console.log(this.$auth0);
     this.getResults(this.collections[this.currentCollection].endpoint);
+    setTimeout(() => {
+      this.initObserver();
+    }, 2000);
   },
 };
 </script>

@@ -55,32 +55,7 @@
             ></v-divider>
           </div>
         </v-col>
-        <!-- <v-col class="text-center" v-for="provider in providers?.flatrate">
-          <v-img
-            height="100px"
-            :src="'https://image.tmdb.org/t/p/original/' + provider.logo_path"
-            :lazy-src="
-              'https://image.tmdb.org/t/p/original/' + provider.logo_path
-            "
-          ></v-img>
-          <span>{{ provider.provider_name }}</span>
-        </v-col> -->
       </v-row>
-      <!-- <v-row class="pa-3" v-if="providers?.buy">
-        <v-col cols="12">
-          <h4>Buy</h4>
-        </v-col>
-        <v-col class="text-center" v-for="provider in providers?.buy">
-          <v-img
-            height="100px"
-            :src="'https://image.tmdb.org/t/p/original/' + provider.logo_path"
-            :lazy-src="
-              'https://image.tmdb.org/t/p/original/' + provider.logo_path
-            "
-          ></v-img>
-          <span>{{ provider.provider_name }}</span>
-        </v-col>
-      </v-row> -->
     </v-row>
     <v-dialog v-model="listModal">
       <v-card>
@@ -99,6 +74,8 @@
 import MoviesAPI from "@/api/movies";
 import UserLists from "@/components/UserLists.vue";
 import ListAPI from "@/api/tmdb-lists";
+import { useSnackbarStore } from "@/stores/snackbar";
+import { mapActions } from "pinia";
 export default {
   data() {
     return {
@@ -111,6 +88,7 @@ export default {
   },
   components: { UserLists },
   methods: {
+    ...mapActions(useSnackbarStore, ["showSnackbar"]),
     handleListRowClick(item) {
       console.log("row clicked", item);
       let params = {
@@ -126,6 +104,8 @@ export default {
       ListAPI.addItems(params)
         .then((resp) => {
           console.log(resp, "resp");
+          this.listModal = false;
+          this.showSnackbar({ message: "Added to list!" });
         })
         .catch((error) => {
           console.log(error, "error");

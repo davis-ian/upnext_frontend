@@ -1,6 +1,6 @@
 import { createWebHistory, createRouter } from "vue-router";
 
-import { authGuard } from "@auth0/auth0-vue";
+import { authGuard, useAuth0 } from "@auth0/auth0-vue";
 
 import Home from "@/views/Home.vue";
 import UserProfile from "@/views/UserProfile.vue";
@@ -11,10 +11,9 @@ import ListDetail from "@/views/ListDetail.vue";
 import TestCompVue from "@/views/TestComp.vue";
 import Lists from "@/views/Lists.vue";
 
-const extendedAuthGuard = async (to) => {
-  const response = await authGuard(to);
-  console.log(response, "authGuard resp");
-};
+// const extendedAuthGuard = async (to) => {
+//   const response = await authGuard(to);
+// };
 
 const routes = [
   {
@@ -26,12 +25,13 @@ const routes = [
     path: "/profile",
     name: "Profile",
     component: UserProfile,
-    beforeEnter: extendedAuthGuard,
+    // beforeEnter: extendedAuthGuard,
   },
   {
     path: "/movie/:id",
     name: "MovieDetails",
     component: MovieDetails,
+    // beforeEnter: extendedAuthGuard,
   },
   {
     path: "/tv/:id",
@@ -57,7 +57,7 @@ const routes = [
     path: "/lists",
     name: "Lists",
     component: Lists,
-    beforeEnter: extendedAuthGuard,
+    // beforeEnter: extendedAuthGuard,
   },
 ];
 

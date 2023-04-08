@@ -52,8 +52,10 @@ const pinia = createPinia();
 // PLUGINS
 // =============================================================================
 import { registerPlugins } from "@/plugins";
+
+// import { auth0 } from "@/auth/index";
 import { createAuth0 } from "@auth0/auth0-vue";
-// import { Auth0Plugin } from "./auth/auth0-plugin";
+
 import axios from "axios";
 import VueAxios from "vue-axios";
 // =============================================================================
@@ -113,21 +115,9 @@ app.config.globalProperties.$axios = { ...axiosInstance };
 // =============================================================================
 
 app.use(VueAxios, axios);
-// app.use(Auth0Plugin, {
-//   domain: import.meta.env.VITE_APP_AUTH0_DOMAIN,
-//   clientId: import.meta.env.VITE_APP_AUTH0_CLIENT_ID,
-//   audience: import.meta.env.VITE_APP_AUD,
-//   onRedirectCallback: (appState) => {
-//     router.push(
-//       appState && appState.targelUrl
-//         ? appState.targetUrl
-//         : window.location.pathname
-//     );
-//   },
-// });
-
 app.use(router);
 app.use(pinia);
+// app.use(auth0);
 
 app.use(
   createAuth0({
