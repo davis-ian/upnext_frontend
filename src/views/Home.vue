@@ -57,7 +57,7 @@
           <div>
             <detailed-poster
               @click="goToDetails(result)"
-              :score="result.vote_average * 10"
+              :score="result.vote_average"
               :src="
                 'https://image.tmdb.org/t/p/original/' +
                 (result.poster_path || '')

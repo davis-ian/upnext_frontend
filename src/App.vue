@@ -1,8 +1,8 @@
 <template>
   <v-app id="app">
     <v-main id="main">
-      <Layout>
-        <router-view />
+      <Layout id="layout">
+        <router-view id="rv" />
         <page-loader v-if="isLoading" />
         <snackbar />
       </Layout>
@@ -50,7 +50,6 @@ export default {
   #main {
     overflow-x: hidden;
     // border: 2px solid red;
-    padding-bottom: 64px;
   }
 }
 </style>

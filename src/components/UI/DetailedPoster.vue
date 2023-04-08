@@ -20,8 +20,9 @@
               </div>
             </template>
           </v-img>
-          <!-- <div class="overlay"></div> -->
-          <score-circle v-if="imageLoaded" :score="score" class="score" />
+          <div class="overlay"></div>
+          <!-- <score-circle v-if="imageLoaded" :score="score" class="score" /> -->
+          <poster-rating v-if="imageLoaded" :score="score" class="score" />
         </div>
       </template>
     </v-hover>
@@ -29,6 +30,7 @@
 </template>
 <script>
 import ScoreCircle from "@/components/UI/ScoreCircle.vue";
+import PosterRating from "@/components/UI/PosterRating.vue";
 export default {
   data() {
     return {
@@ -45,6 +47,7 @@ export default {
   },
   components: {
     ScoreCircle,
+    PosterRating,
   },
 };
 </script>
@@ -61,17 +64,17 @@ export default {
 }
 .score {
   position: absolute;
-  bottom: -5px;
-  right: -5px;
+  bottom: 0px;
+  right: opx;
 }
 .overlay {
   //   border: 2px solid red;
   position: absolute;
-  top: 0;
+  bottom: 0;
   width: 100%;
-  height: 30%;
-  border-radius: 10px 10px 0 0;
-  background: linear-gradient(hsl(0 0% 0% / 1), hsl(0 0% 0% / 0));
+  height: 20%;
+  border-radius: 0 0 10px 10px;
+  background: linear-gradient(hsl(0 0% 0% / 0), hsl(0 0% 0% / 1));
 }
 .img-wrap:hover {
   transition: 0.3s;

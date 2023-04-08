@@ -68,6 +68,8 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 // FONT AWESOME ICONS
 // =============================================================================
 import {
+  faStar,
+  faStarHalf,
   faBars,
   faList,
   faTrash,
@@ -80,11 +82,14 @@ import {
   faIceCream,
   faDrumstickBite,
   faX,
+  faStream,
 } from "@fortawesome/free-solid-svg-icons";
 
 // import { fa } from "@fortawesome/free-regular-svg-icons";
 
 library.add(
+  faStar,
+  faStarHalf,
   faBars,
   faList,
   faTrash,
@@ -133,6 +138,19 @@ app.use(
     },
   })
 );
+
+// app.directive("click-outside", {
+//   bind: function (el, binding, vnode) {
+//     el.clickOutsideEvent = function (event) {
+//       if (!(el == event.target || el.contains(event.target))) {
+//       }
+//     };
+//     document.body.addEventListener("click", el.clickOutsideEvent);
+//   },
+//   unbind: function (el) {
+//     document.body.removeEventListener("click", el.clickOutsideEvent);
+//   },
+// });
 
 registerPlugins(app);
 app.mount("#app");

@@ -7,7 +7,12 @@
       <h2>Lists</h2>
       <v-btn @click="newList" icon>+</v-btn>
     </div>
-    <user-lists ref="listComp" />
+    <v-progress-linear indeterminate v-if="loading"></v-progress-linear>
+    <user-lists
+      @loadstart="loading = true"
+      @loadend="loading = false"
+      ref="listComp"
+    />
   </div>
 </template>
 <script>
@@ -16,6 +21,7 @@ export default {
   data() {
     return {
       message: "hi",
+      loading: true,
     };
   },
   components: {
