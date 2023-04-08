@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div v-if="!isLoading && this.lists.length == 0">
+    <!-- <div v-if="!isLoading && this.lists.length == 0">
       <v-btn @click="getUserLists()">Check Lists</v-btn>
-    </div>
+    </div> -->
     <v-list nav>
       <v-list-item
         class="mb-2"
@@ -79,6 +79,7 @@ export default {
       }
     },
     getUserLists() {
+      this.$emit("loadstart");
       const id = this.user["https://nextup.com/userId"];
       console.log(id, "getting list for id");
       UserListAPI.index(id)
@@ -88,6 +89,9 @@ export default {
         })
         .catch((err) => {
           console.log(err, "error");
+        })
+        .finally(() => {
+          this.$emit("loadend");
         });
     },
     deleteList(id, key) {
@@ -122,6 +126,7 @@ export default {
     },
   },
   mounted() {
+    console.log("list mounted");
     this.getUserLists();
   },
 };

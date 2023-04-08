@@ -9,9 +9,17 @@
       >
     </div>
     <v-row class="pa-3" v-if="movie">
-      <v-col style="display: flex; justify-content: center" cols="12">
+      <v-col cols="12">
+        <div class="text-center mb-2">
+          <span v-for="(item, index) in movie.genres">
+            <span class="pa-1">{{ item.name }}</span>
+            <span v-if="index != movie.genres.length - 1">|</span>
+          </span>
+        </div>
         <v-img
+          cover
           height="500px"
+          class="poster elevation-6"
           :src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
           :lazy-src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
         ></v-img>
@@ -27,12 +35,6 @@
       >
         <h1>{{ movie.name || movie.title }}</h1>
         <p>{{ movie.overview }}</p>
-        <div>
-          <span v-for="(item, index) in movie.genres">
-            <strong class="pa-1">{{ item.name }}</strong>
-            <span v-if="index != movie.genres.length - 1">|</span>
-          </span>
-        </div>
       </v-col>
       <!-- {{ providers }} -->
       <v-row class="pa-3">

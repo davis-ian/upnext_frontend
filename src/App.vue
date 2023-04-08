@@ -34,6 +34,9 @@ export default {
 </script>
 
 <style lang="scss">
+:root {
+  --dark-1: #212121;
+}
 #main {
   // overflow-x: hidden;
   // border: 2px solid orange;
@@ -47,6 +50,7 @@ export default {
   #main {
     overflow-x: hidden;
     // border: 2px solid red;
+    padding-bottom: 64px;
   }
 }
 </style>

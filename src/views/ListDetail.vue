@@ -74,12 +74,15 @@
                   <p>
                     {{ new Date(result.release_date).toLocaleDateString() }}
                   </p>
-                  <v-progress-circular
+                  <!-- <v-progress-circular
                     :model-value="result.vote_average * 10"
                     :color="getProgressColor(result.vote_average * 10)"
                   >
                     {{ result.vote_average * 10 }}
-                  </v-progress-circular>
+                  </v-progress-circular> -->
+                  <score-circle
+                    :score="result.vote_average * 10"
+                  ></score-circle>
                 </v-col>
               </v-row>
             </div>
@@ -137,6 +140,7 @@
 <script>
 import UserListAPI from "@/api/lists";
 import ListAPI from "@/api/tmdb-lists";
+import ScoreCircle from "@/components/UI/ScoreCircle.vue";
 export default {
   data() {
     return {
@@ -148,6 +152,7 @@ export default {
       menuItems: [{ title: "Delete", icon: "fa-solid fa-trash" }],
     };
   },
+  components: { ScoreCircle },
   methods: {
     handleMenuClick(val) {
       switch (val) {
@@ -156,15 +161,15 @@ export default {
           break;
       }
     },
-    getProgressColor(val) {
-      if (val > 70) {
-        return "#01c6ac";
-      } else if (val > 50) {
-        return "#FFDE03";
-      } else {
-        return "#b00020";
-      }
-    },
+    // getProgressColor(val) {
+    //   if (val > 70) {
+    //     return "#01c6ac";
+    //   } else if (val > 50) {
+    //     return "#FFDE03";
+    //   } else {
+    //     return "#b00020";
+    //   }
+    // },
     listDeleteStep1() {
       console.log("deleting", this.list);
       this.listDeleteConfirmationModal = true;

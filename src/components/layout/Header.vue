@@ -20,10 +20,10 @@
       <!-- <LogoutBtn class="mr-2" v-if="isAuthenticated" />
       <LoginBtn class="mr-2" v-if="!isAuthenticated" /> -->
       <!-- <SignupBtn class="mr-2" v-if="!isAuthenticated"></SignupBtn> -->
-      <v-app-bar-nav-icon
+      <!-- <v-app-bar-nav-icon
         theme="dark"
         @click="toggleDropDown"
-      ></v-app-bar-nav-icon>
+      ></v-app-bar-nav-icon> -->
     </v-app-bar>
 
     <!-- Start Nav modal -->

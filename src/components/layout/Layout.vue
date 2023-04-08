@@ -1,6 +1,16 @@
 <template>
   <div class="layout-wrap">
-    <Header />
+    <Header ref="header" />
+    <v-btn
+      rounded="xl"
+      theme="dark"
+      class="mobile-menu-toggle"
+      @click="toggleMenu"
+      ><font-awesome-icon
+        style="color: white"
+        icon="fa-solid fa-bars"
+      ></font-awesome-icon
+    ></v-btn>
     <slot />
     <!-- <Footer /> -->
   </div>
@@ -14,6 +24,22 @@ export default {
     Header,
     Footer,
   },
+  methods: {
+    toggleMenu() {
+      this.$refs.header.toggleDropDown();
+    },
+  },
 };
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.mobile-menu-toggle {
+  // border: 2px solid red;
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 50px;
+  z-index: 1;
+}
+</style>

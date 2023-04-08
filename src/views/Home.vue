@@ -14,26 +14,37 @@
         <h1>{{ collections[currentCollection].name }}</h1>
       </div>
 
-      <div
-        v-if="currentCollection == 3"
-        style="display: flex; justify-content: center"
-        class="pa-5"
-      >
-        <v-text-field
-          style="max-width: 500px"
-          density="compact"
-          variant="solo"
-          clearable
-          @keydown.enter="startSearch"
-          v-model="searchText"
-          label="Search"
-          dense
-        >
-        </v-text-field>
-        <v-btn style="height: 40px" class="ml-2" @click="startSearch"
-          >search</v-btn
-        >
-      </div>
+      <v-row v-if="currentCollection == 3">
+        <v-col>
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              /* border: 2px solid red; */
+            "
+            class="pa-5"
+          >
+            <v-text-field
+              style="max-width: 500px"
+              density="compact"
+              variant="solo"
+              clearable
+              @keydown.enter="startSearch"
+              v-model="searchText"
+              label="Search"
+              dense
+            >
+            </v-text-field>
+            <v-btn style="height: 40px" class="ml-2" @click="startSearch"
+              >search</v-btn
+            >
+          </div>
+        </v-col>
+        <v-col v-if="results.length == 0" class="text-center" cols="12">
+          <h1>What are we looking for today?</h1>
+        </v-col>
+      </v-row>
 
       <v-row class="pa-5">
         <v-col
@@ -44,36 +55,14 @@
           :key="index"
         >
           <div>
-            <v-hover>
-              <template v-slot:default="{ isHovering, props }">
-                <div class="img-wrap" v-bind="props">
-                  <v-img
-                    class="img"
-                    @click="goToDetails(result)"
-                    max-height="100%"
-                    :src="
-                      'https://image.tmdb.org/t/p/original/' +
-                      (result.poster_path || '')
-                    "
-                    :lazy-src="
-                      'https://image.tmdb.org/t/p/original/' +
-                      (result.poster_path || '')
-                    "
-                  >
-                    <template v-slot:placeholder>
-                      <div
-                        class="d-flex align-center justify-center fill-height"
-                      >
-                        <v-progress-circular
-                          color="grey-lighten-4"
-                          indeterminate
-                        ></v-progress-circular>
-                      </div>
-                    </template>
-                  </v-img>
-                </div>
-              </template>
-            </v-hover>
+            <detailed-poster
+              @click="goToDetails(result)"
+              :score="result.vote_average * 10"
+              :src="
+                'https://image.tmdb.org/t/p/original/' +
+                (result.poster_path || '')
+              "
+            />
           </div>
         </v-col>
       </v-row>
@@ -92,6 +81,8 @@
 <script>
 import MoviesAPI from "@/api/movies";
 import PageLoader from "@/components/UI/PageLoader.vue";
+import DetailedPoster from "@/components/UI/DetailedPoster.vue";
+import { debounceV2 } from "@/utils/debounce";
 export default {
   data() {
     return {
@@ -127,7 +118,7 @@ export default {
       ],
     };
   },
-  components: { PageLoader },
+  components: { PageLoader, DetailedPoster },
   watch: {
     currentCollection() {
       this.currentPage = 1;
@@ -145,6 +136,10 @@ export default {
         this.getResults(this.collections[this.currentCollection].endpoint);
       }
     },
+    searchText: debounceV2(function () {
+      this.currentPage = 1;
+      this.startSearch();
+    }, 500),
   },
   methods: {
     goToDetails(item) {
@@ -233,20 +228,5 @@ export default {
 #home {
   // background-color: black;
   min-height: 100%;
-}
-.img-wrap {
-  transition: 0.3s;
-  // border: 2px solid red;
-  border-radius: 10px;
-  .img {
-    border-radius: 10px;
-    cursor: pointer;
-  }
-}
-
-.img-wrap:hover {
-  transition: 0.3s;
-  box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
-  transform: scale(1.02);
 }
 </style>
