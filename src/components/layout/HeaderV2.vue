@@ -189,6 +189,7 @@ export default {
   left: 0;
   background-color: rgba(0, 0, 0, 0.649);
   backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 .active {
   visibility: visible;
