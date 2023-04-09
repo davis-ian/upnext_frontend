@@ -5,7 +5,7 @@
       <div class="top-nav">
         <h2 @click="$router.push('/')">UpNext</h2>
       </div>
-      <slot />
+      <slot class="main-content" />
     </div>
     <div class="bottom-nav">
       <HeaderV2 />
@@ -35,10 +35,12 @@ export default {
   height: 100vh;
   padding-bottom: 84px;
   overflow: auto;
+  .main-content {
+    height: 100vh;
+  }
 }
 
 .top-nav {
-  // border: 2px solid red;
   position: sticky;
   top: 0;
   z-index: 5;
@@ -50,8 +52,8 @@ export default {
   align-items: center;
 }
 .bottom-nav {
-  height: 64px;
-  position: fixed;
+  height: 84px;
+  position: sticky;
   bottom: 0;
   margin: auto;
   z-index: 9;

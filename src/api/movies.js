@@ -33,6 +33,17 @@ export default {
       }
     );
   },
+  indexVideos(id, collection, params) {
+    return axios.get(
+      `${import.meta.env.VITE_APP_MOVIE_API_V3}/${collection}/${id}/videos`,
+      {
+        params: {
+          ...params,
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
+      }
+    );
+  },
   update(id) {
     // readonly resource
   },
