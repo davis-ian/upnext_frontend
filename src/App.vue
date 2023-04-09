@@ -1,8 +1,8 @@
 <template>
-  <v-app id="app">
+  <v-app>
     <v-main id="main">
       <Layout id="layout">
-        <router-view id="rv" />
+        <router-view />
         <page-loader v-if="isLoading" />
         <snackbar />
       </Layout>
@@ -38,18 +38,22 @@ export default {
   --dark-1: #212121;
 }
 #main {
-  // overflow-x: hidden;
-  // border: 2px solid orange;
+  // main css
   height: 100vh;
+  overflow: hidden;
 }
-// #app {
-//   border: 2px solid blue;
-// }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
 
 @media only screen and (max-width: 700px) {
   #main {
     overflow-x: hidden;
-    // border: 2px solid red;
   }
 }
 </style>

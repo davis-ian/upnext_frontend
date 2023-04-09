@@ -1,73 +1,44 @@
 <template>
   <div>
-    <v-app-bar elevation="0" color="black">
-      <v-app-bar-title @click="$router.push('/')">UpNext</v-app-bar-title>
-      <!-- <v-spacer></v-spacer> -->
-
-      <span class="pr-4" v-if="isAuthenticated"
-        >Welcome, {{ user.nickname }}!</span
-      >
-
-      <!-- <v-btn @click="test" variant="outlined">User</v-btn> -->
-      <!-- <v-btn @click="searchModal = true" variant="outlined">Search</v-btn>
-      <v-btn @click="navModal = true" variant="outlined">More</v-btn> -->
-      <!-- <v-btn class="mr-2" href="/" variant="outlined">Up Next</v-btn> -->
-      <!-- <v-btn
-        class="mr-2"
-        href="/profile"
-        v-if="isAuthenticated"
-        variant="outlined"
-        >Profile</v-btn
-      > -->
-      <!-- <LogoutBtn class="mr-2" v-if="isAuthenticated" />
-      <LoginBtn class="mr-2" v-if="!isAuthenticated" /> -->
-      <!-- <SignupBtn class="mr-2" v-if="!isAuthenticated"></SignupBtn> -->
-      <!-- <v-app-bar-nav-icon
-        theme="dark"
-        @click="toggleDropDown"
-      ></v-app-bar-nav-icon> -->
-    </v-app-bar>
-
-    <!-- Start Nav modal -->
-    <!-- <v-dialog v-model="navModal">
-      <v-card class="pa-3">
-        <div style="display: flex; flex-direction: column">
-          <v-btn href="/" variant="text">Home</v-btn>
-          <v-btn href="/profile" variant="text">Profile</v-btn>
-        </div>
-      </v-card>
-    </v-dialog> -->
-
-    <v-expand-transition @click:outside="toggleDropDown">
-      <v-card v-show="dropdownShowing" class="mx-auto expand-menu">
-        <v-list>
-          <v-list-item
-            @click="handleMobileMenuClick(item)"
-            v-for="(item, index) in mobileMenuTabs"
-            :key="index"
-          >
-            <template v-slot:prepend>
-              <div style="width: 2rem">
-                <font-awesome-icon :icon="item.icon" />
+    <div
+      class="mx-auto expand-menu"
+      :class="dropdownShowing ? 'active-menu' : ''"
+    >
+      <div class="menu-card">
+        <div class="menu-content">
+          <div>
+            <div class="pa-3">
+              <div
+                class="d-flex menu-item"
+                style="align-items: center"
+                v-for="(item, index) in mobileMenuTabs"
+                @click="handleMobileMenuClick(item)"
+              >
+                <div style="width: 2rem">
+                  <font-awesome-icon
+                    style="font-size: 1.2rem"
+                    :icon="item.icon"
+                  />
+                </div>
+                <h2>{{ item.label }}</h2>
               </div>
-            </template>
-            <v-list-item-title>{{ item.label }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-card>
-    </v-expand-transition>
-    <!-- End Nav modal -->
+            </div>
+          </div>
+        </div>
+        <div class="menu-toggle">
+          <v-btn theme="dark" @click="toggleDropDown"
+            ><font-awesome-icon
+              style="color: white"
+              :icon="dropdownShowing ? 'fa-solid fa-x' : 'fa-solid fa-bars'"
+            ></font-awesome-icon
+          ></v-btn>
 
-    <v-btn
-      rounded="xl"
-      theme="dark"
-      class="mobile-menu-toggle"
-      @click="toggleDropDown"
-      ><font-awesome-icon
-        style="color: white"
-        icon="fa-solid fa-bars"
-      ></font-awesome-icon
-    ></v-btn>
+          <p style="font-size: 1rem" class="ml-4" v-if="isAuthenticated">
+            Welcome, {{ user.nickname }}!
+          </p>
+        </div>
+      </div>
+    </div>
 
     <div
       @click="toggleDropDown"
@@ -90,25 +61,6 @@
       </v-card>
     </v-dialog>
     <!-- End Search Modal -->
-    <!-- 
-    <v-dialog content-class="mobile-menu" v-model="dropdownShowing">
-      <v-card>
-        <v-list>
-          <v-list-item
-            @click="handleMobileMenuClick(item)"
-            v-for="(item, index) in mobileMenuTabs"
-            :key="index"
-          >
-            <template v-slot:prepend>
-              <div style="width: 2rem">
-                <font-awesome-icon :icon="item.icon" />
-              </div>
-            </template>
-            <v-list-item-title>{{ item.label }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-card>
-    </v-dialog> -->
   </div>
 </template>
 <script>
@@ -211,12 +163,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+:root {
+  --header-height: 64px;
+}
 .mobile-menu {
-  // border: 2px solid red;
   bottom: 0;
 }
 .mobile-menu-toggle {
-  // border: 2px solid red;
   position: fixed;
   bottom: 10px;
   left: 0;
@@ -224,39 +177,73 @@ export default {
   margin: auto;
   width: 50px;
   z-index: 3;
+  display: flex;
 }
 
 .menu-overlay {
   height: 100%;
   width: 100%;
-  // visibility: hidden;
   position: fixed;
   z-index: 1;
   top: 0;
   left: 0;
-  // opacity: 0;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.9);
-  transition: opacity 0.3s linear, visibility 0s;
+  background-color: rgba(0, 0, 0, 0.649);
+  backdrop-filter: blur(5px);
 }
-
 .active {
-  opacity: 0.8;
   visibility: visible;
-  transition: visibility 0s, opacity 0.3s linear;
+  //   opacity: 0.7;
 }
 .hidden {
-  opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s linear, visibility 0.3s;
 }
 
 .expand-menu {
-  // outline: 2px solid red !important;
-  height: 30vh;
+  height: 84px;
   width: 100vw;
   z-index: 2 !important;
   position: fixed !important;
   bottom: 0;
+  background-color: transparent;
+  padding: 10px;
+  transition: 0.3s;
+
+  .menu-content {
+    height: calc(100% - 64px);
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: white;
+    // background-color: transparent;
+    // background-color: rgba(255, 255, 255, 0.892);
+    // backdrop-filter: blur(5px);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+.menu-item {
+  padding: 10px;
+}
+
+.active-menu {
+  height: 60vh;
+}
+
+.menu-card {
+  height: 100%;
+  background-color: transparent;
+}
+
+.menu-toggle {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 64px;
+  padding: 10px;
+  background-color: black;
+  color: white;
+  border-radius: 10px;
 }
 </style>

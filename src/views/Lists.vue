@@ -7,7 +7,10 @@
       <h2>Lists</h2>
       <v-btn @click="newList" icon>+</v-btn>
     </div>
-    <v-progress-linear indeterminate v-if="loading"></v-progress-linear>
+    <div v-if="loading">
+      <v-progress-linear indeterminate></v-progress-linear>
+      <p class="text-center pt-2">Gathering your lists</p>
+    </div>
     <user-lists
       @loadstart="loading = true"
       @loadend="loading = false"
