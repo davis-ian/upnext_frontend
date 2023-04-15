@@ -1,0 +1,32 @@
+/* Example font styles */
+@import url("https://fonts.googleapis.com/css2?family=Yeseva+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;1,400;1,500&family=DM+Serif+Display:ital@0;1&display=swap");
+
+@font-face {
+  font-family: "PrisonDisplay";
+  src: url("@/assets/fonts/The-prison-display/The Prison.otf")
+    format("opentype");
+  src: url("@/assets/fonts/The-prison-display/The Prison.ttf")
+    format("truetype");
+  src: url("@/assets/fonts/The-prison-display/The Prison.woff") format("woff");
+}
+
+/* Yeseva One for headers */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  /* font-family: "Yeseva One", cursive; */
+  /* font-family: "PrisonDisplay"; */
+  font-family: "DM Serif Display", serif;
+}
+
+/* Josefin Sans for other text */
+body {
+  /* font-family: "Josefin Sans", sans-serif; */
+  font-family: "DM Sans", sans-serif;
+}

@@ -34,13 +34,20 @@ export default {
 </script>
 
 <style lang="scss">
-:root {
-  --dark-1: #212121;
-}
+// @import "@/css/reset.css";
+@import "@/css/fonts.css";
+@import "@/css/global.css";
+
 #main {
   // main css
   height: 100vh;
   overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html,
@@ -53,6 +60,7 @@ body {
 
 @media only screen and (max-width: 700px) {
   #main {
+    max-width: 100%;
     overflow-x: hidden;
   }
 }

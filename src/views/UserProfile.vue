@@ -51,8 +51,8 @@
 </template>
 <script>
 import UserLists from "@/components/UserLists.vue";
-import ListAPI from "@/api/tmdb-lists";
-import UserListAPI from "@/api/lists";
+import ListAPI from "@/api/tmdb";
+import UpnextAPI from "@/api/upnext";
 export default {
   data() {
     return {
@@ -77,7 +77,6 @@ export default {
       });
     },
     toggleListPrivacy() {
-      console.log(this.list.public);
       ListAPI.update(8245289, {
         public: !this.list.public,
       })
@@ -94,12 +93,9 @@ export default {
         return;
       }
       if (!userId > 0) {
-        console.log("no user id");
-        console.log(userId);
-        console.log(this.$auth0.user.value["https://nextup.com/userId"]);
         return;
       }
-      UserListAPI.create(name, userId)
+      UpnextAPI.createList(name, userId)
         .then((resp) => {
           this.creatingList = false;
           this.$refs.lists.getUserLists(userId);

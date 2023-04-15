@@ -44,6 +44,51 @@ export default {
       }
     );
   },
+  getCast(id, collection, params) {
+    return axios.get(
+      import.meta.env.VITE_APP_MOVIE_API_V3 + `/${collection}/${id}/credits`,
+      {
+        params: {
+          ...params,
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
+      }
+    );
+  },
+  getRecommendations(id, collection, params) {
+    return axios.get(
+      import.meta.env.VITE_APP_MOVIE_API_V3 +
+        `/${collection}/${id}/recommendations`,
+      {
+        params: {
+          ...params,
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
+      }
+    );
+  },
+  getSimilar(id, collection, params) {
+    return axios.get(
+      import.meta.env.VITE_APP_MOVIE_API_V3 + `/${collection}/${id}/similar`,
+      {
+        params: {
+          ...params,
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
+      }
+    );
+  },
+  getReviews(id, collection, params) {
+    return axios.get(
+      import.meta.env.VITE_APP_MOVIE_API_V3 + `/${collection}/${id}/reviews`,
+      {
+        params: {
+          ...params,
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
+      }
+    );
+  },
   update(id) {
     // readonly resource
   },

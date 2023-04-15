@@ -5,9 +5,15 @@
       :class="dropdownShowing ? 'active-menu' : ''"
     >
       <div class="menu-card">
-        <div class="menu-content">
+        <div
+          class="menu-content"
+          :class="dropdownShowing ? 'active-content' : ''"
+        >
           <div>
             <div class="pa-3">
+              <h3 class="text-center" v-if="isAuthenticated">
+                Welcome, {{ user.nickname }}!
+              </h3>
               <div
                 class="d-flex menu-item"
                 style="align-items: center"
@@ -33,9 +39,12 @@
             ></font-awesome-icon
           ></v-btn>
 
-          <p style="font-size: 1rem" class="ml-4" v-if="isAuthenticated">
+          <!-- <p style="font-size: 1rem" class="ml-4" v-if="isAuthenticated">
             Welcome, {{ user.nickname }}!
-          </p>
+          </p> -->
+          <strong
+            ><p style="font-size: 1rem" class="ml-4 mr-2">UpNext</p></strong
+          >
         </div>
       </div>
     </div>
@@ -200,27 +209,29 @@ export default {
 }
 
 .expand-menu {
-  height: 84px;
   width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   z-index: 2 !important;
   position: fixed !important;
-  bottom: 0;
+  bottom: 10px;
   background-color: transparent;
   padding: 10px;
   transition: 0.3s;
 
   .menu-content {
-    height: calc(100% - 64px);
+    height: 0;
     overflow: hidden;
     border-radius: 10px;
     background-color: white;
-    // background-color: transparent;
-    // background-color: rgba(255, 255, 255, 0.892);
-    // backdrop-filter: blur(5px);
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
+    margin-bottom: 10px;
+    width: 90%;
+    transition: 0.3s;
   }
 }
 
@@ -229,21 +240,33 @@ export default {
 }
 
 .active-menu {
-  height: 60vh;
+  transition: 0.3s;
+}
+
+.active-content {
+  height: 300px !important;
+  transition: 0.3s;
 }
 
 .menu-card {
   height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: transparent;
 }
 
 .menu-toggle {
   display: flex;
+  width: fit-content;
+  justify-self: center;
   justify-content: flex-start;
   align-items: center;
   height: 64px;
   padding: 10px;
   background-color: black;
+  border: 1px solid white;
   color: white;
   border-radius: 10px;
 }

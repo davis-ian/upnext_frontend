@@ -3,7 +3,8 @@
     <div v-if="list">
       <div style="display: flex; justify-content: space-between">
         <h1>{{ list.name }}</h1>
-        <v-menu>
+
+        <v-menu v-if="canDeleteList">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props">...</v-btn>
           </template>
@@ -138,8 +139,8 @@
   </div>
 </template>
 <script>
-import UserListAPI from "@/api/lists";
-import ListAPI from "@/api/tmdb-lists";
+import UpnextAPI from "@/api/upnext";
+import ListAPI from "@/api/tmdb";
 import ScoreCircle from "@/components/UI/ScoreCircle.vue";
 export default {
   data() {
@@ -150,9 +151,19 @@ export default {
       deleteConfirmModal: false,
       listDeleteConfirmationModal: false,
       menuItems: [{ title: "Delete", icon: "fa-solid fa-trash" }],
+      userId: this.$auth0.user.value["https://nextup.com/userId"],
+      userDetails: null,
     };
   },
   components: { ScoreCircle },
+  computed: {
+    canDeleteList() {
+      return (
+        this.$route.params.id != this.userDetails.props.watchedList &&
+        this.$route.params.id != this.userDetails.props.upcomingList
+      );
+    },
+  },
   methods: {
     handleMenuClick(val) {
       switch (val) {
@@ -170,6 +181,12 @@ export default {
     //     return "#b00020";
     //   }
     // },
+    getUser() {
+      UpnextAPI.getUser(this.userId).then((resp) => {
+        console.log(resp, "GOT USER");
+        this.userDetails = resp.data;
+      });
+    },
     listDeleteStep1() {
       console.log("deleting", this.list);
       this.listDeleteConfirmationModal = true;
@@ -177,7 +194,7 @@ export default {
     deleteList(id, key) {
       console.log(id);
       console.log(key);
-      UserListAPI.delete(id, key)
+      UpnextAPI.deleteList(id, key)
         .then((resp) => {
           console.log("deleted");
           this.$router.push("/lists");
@@ -204,15 +221,22 @@ export default {
       this.deleteConfirmModal = true;
     },
     getDetails() {
-      UserListAPI.show(this.$route.params.id)
+      UpnextAPI.getList(this.$route.params.id)
         .then((resp) => {
-          console.log(resp, "resp");
-          this.list = resp.data;
+          // console.log(resp, "resp");
+          // this.list = resp.data;
+          ListAPI.show(resp.data.props.tmdbId).then((tList) => {
+            console.log(tList, "tList");
+            this.list = tList.data;
+          });
         })
         .catch((error) => {
           console.log(error, "error");
         });
     },
+    // getDetails() {
+    //   ListAPI.show()
+    // }
     removeListItem(item) {
       let items = [{ media_type: item.media_type, media_id: item.id }];
       ListAPI.removeItems(this.list.id, items)
@@ -230,6 +254,7 @@ export default {
   mounted() {
     console.log("detail mount");
     this.getDetails();
+    this.getUser();
   },
 };
 </script>

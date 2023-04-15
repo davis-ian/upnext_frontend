@@ -1,21 +1,27 @@
 import axios from "axios";
-import ListAPI from "@/api/tmdb-lists";
+import tmdbApi from "./tmdb";
 
 export default {
-  index(id) {
+  // returns all lists for a user
+  getListsForUser(id) {
     return axios.get(import.meta.env.VITE_APP_API + `/lists/by-user/` + id);
   },
-  async show(id, params) {
+
+  // returns list by id
+  async getList(id, params) {
     return axios
       .get(import.meta.env.VITE_APP_API + `/lists/` + id)
       .then((resp) => {
-        return ListAPI.show(resp.data.props.tmdbId);
+        return resp;
       });
   },
-  update(id, body) {},
+
+  updateList(id, body) {},
+
   // creates tmbd list and then creates instance in db
   async create(listName, userId) {
-    return ListAPI.create(listName)
+    return tmdbApi
+      .create(listName)
       .then((resp) => {
         return axios.post(import.meta.env.VITE_APP_API + `/lists`, {
           name: listName,
@@ -27,13 +33,25 @@ export default {
         return error;
       });
   },
-  async delete(id, key) {
-    return ListAPI.delete(id)
+
+  // deletes tmbd list and then deletes instance in db
+  async deleteList(id, key) {
+    return tmdbApi
+      .delete(id)
       .then((resp) => {
         return axios.delete(import.meta.env.VITE_APP_API + `/lists/${key}`);
       })
       .catch((error) => {
         return error;
+      });
+  },
+
+  // returns user by id
+  async getUser(id, params) {
+    return axios
+      .get(import.meta.env.VITE_APP_API + `/users/` + id)
+      .then((resp) => {
+        return resp;
       });
   },
 };

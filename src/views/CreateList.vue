@@ -6,8 +6,8 @@
   </div>
 </template>
 <script>
-import ListAPI from "@/api/tmdb-lists";
-import UserListAPI from "@/api/lists";
+import ListAPI from "@/api/tmdb";
+import UpnextAPI from "@/api/upnext";
 export default {
   data() {
     return {
@@ -19,30 +19,21 @@ export default {
   methods: {
     createList(name) {
       if (this.listName.length == 0) {
-        console.log("name required");
         return;
       }
       if (!this.userId > 0) {
-        console.log("no user id");
-        console.log(this.userId);
-        console.log(this.$auth0);
         return;
       }
-      ListAPI.create(this.listName)
-        .then((resp) => {
-          console.log(resp, "list made");
-          UserListAPI.create({
-            name: this.listName,
-            userId: this.userId,
-          });
-        })
-        .catch((err) => {
-          console.log(err, "error");
-        });
+
+      console.log(resp, "list made");
+      UpnextAPI.createList({
+        name: this.listName,
+        userId: this.userId,
+      });
     },
     getUserLists(id) {
       console.log(id, "getting list for id");
-      UserListAPI.index(id)
+      UpnextAPI.getListsForUser(id)
         .then((resp) => {
           console.log(resp, "user lists");
           this.lists = resp.data;

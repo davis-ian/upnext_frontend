@@ -46,9 +46,10 @@
         </v-col>
       </v-row>
 
-      <v-row class="pa-5">
+      <v-row no-gutters class="pa-5">
         <v-col
-          cols="12"
+          class="pa-1"
+          cols="4"
           sm="4"
           md="3"
           v-for="(result, index) in results"

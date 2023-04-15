@@ -68,6 +68,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 // FONT AWESOME ICONS
 // =============================================================================
 import {
+  faPlus,
   faPlay,
   faStar,
   faStarHalf,
@@ -84,11 +85,14 @@ import {
   faDrumstickBite,
   faX,
   faStream,
+  faMinus,
 } from "@fortawesome/free-solid-svg-icons";
 
 // import { fa } from "@fortawesome/free-regular-svg-icons";
 
 library.add(
+  faMinus,
+  faPlus,
   faPlay,
   faStream,
   faStar,

@@ -1,19 +1,155 @@
 <template>
-  <div id="detail-wrap" class="pa-3">
+  <div id="detail-wrap">
     <!-- <h1>Details</h1> -->
-
-    <div style="display: flex; justify-content: space-between" class="pa-3">
-      <v-btn variant="tonal" @click="$router.back"
-        ><font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon
-      ></v-btn>
-      <v-btn variant="tonal" v-if="isAuthenticated" @click="addToList(movie)"
-        >add to list</v-btn
-      >
-    </div>
-    <v-row class="pa-3" v-if="movie">
+    <!-- 
+    <div style="position: relative">
+      <div style="z-index: -1; width: 100%" v-if="movie">
+        <v-img
+          :src="'https://image.tmdb.org/t/p/original/' + movie.backdrop_path"
+          :lazy-src="
+            'https://image.tmdb.org/t/p/original/' + movie.backdrop_path
+          "
+        ></v-img>
+        <div class="overlay gradient"></div>
+      </div>
+    </div> -->
+    <v-row no-gutters>
       <v-col>
-        <h1>{{ movie.title }}</h1>
+        <div class="image-container">
+          <div style="z-index: -1; height: 100; width: 100%" v-if="movie">
+            <v-img
+              class="image-overlay"
+              :src="
+                'https://image.tmdb.org/t/p/original/' + movie.backdrop_path
+              "
+              :lazy-src="
+                'https://image.tmdb.org/t/p/original/' + movie.backdrop_path
+              "
+            >
+              <div class="gradient-overlay"></div>
+              <v-btn variant="tonal" @click="$router.back" class="ma-3"
+                ><font-awesome-icon
+                  icon="fa-solid fa-arrow-left"
+                ></font-awesome-icon
+              ></v-btn>
+              <!-- <v-col cols="12">
+        <v-btn class="ma-3" size="small" variant="tonal" @click="$router.back"
+          ><font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon
+        ></v-btn>
+      </v-col> -->
+            </v-img>
+          </div>
+        </div>
       </v-col>
+    </v-row>
+
+    <v-row class="pa-3 mt-0" v-if="movie">
+      <v-col cols="8">
+        <h2>{{ movie.title }}</h2>
+        <div style="display: flex; flex-direction: column">
+          <span v-if="movie.release_date">{{
+            movie.release_date.split("-")[0]
+          }}</span>
+          <span>{{ movie.runtime }} min</span>
+        </div>
+
+        <div>
+          <font-awesome-icon
+            class="mr-2"
+            icon="fa-solid fa-star"
+          ></font-awesome-icon>
+          <span>
+            <strong>{{ Math.round(movie.vote_average * 10) / 10 }}</strong>
+            /10
+          </span>
+        </div>
+        <!-- <div v-if="crew[0]">
+          <span>Directed by</span> <strong>{{ crew[0].name }}</strong>
+        </div> -->
+        <!-- <v-btn @click="toggleWatched">watch</v-btn> -->
+      </v-col>
+      <v-col cols="4">
+        <v-img
+          cover
+          class="poster elevation-6"
+          :src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
+          :lazy-src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
+        ></v-img>
+      </v-col>
+
+      <v-col cols="12">
+        <p>{{ movie.overview }}</p>
+      </v-col>
+
+      <v-col cols="12">
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <v-btn variant="tonal">Add to list</v-btn>
+          <v-btn variant="tonal">Watch</v-btn>
+          <v-btn variant="tonal">Rate</v-btn>
+        </div>
+      </v-col>
+
+      <v-col cols="12">
+        <div class="chip-flex">
+          <v-chip v-for="(genre, i) in movie.genres" color="#23d9a5">{{
+            genre.name
+          }}</v-chip>
+        </div>
+      </v-col>
+
+      <v-col cols="12">
+        <h3>Reviews</h3>
+        <v-divider theme="dark"></v-divider>
+      </v-col>
+
+      <v-col cols="12" v-for="(review, i) in reviews">
+        <v-row>
+          <v-col cols="2">
+            <v-avatar
+              v-if="
+                review.author_details.avatar_path &&
+                !review.author_details.avatar_path.includes('https')
+              "
+            >
+              <v-img
+                :src="
+                  'https://image.tmdb.org/t/p/original/' +
+                  review.author_details.avatar_path
+                "
+                alt="avatar"
+              />
+            </v-avatar>
+            <v-avatar color="#23d9a5" v-else>
+              <span>{{ Array.from(review.author_details.name)[0] }}</span>
+            </v-avatar>
+          </v-col>
+          <v-col>
+            <div>
+              <span>{{ review.author }}</span>
+            </div>
+          </v-col>
+          <v-col>
+            <span>
+              <font-awesome-icon
+                v-for="(rating, i) in review.author_details.rating"
+                icon="fa-solid fa-star"
+              ></font-awesome-icon>
+            </span>
+          </v-col>
+        </v-row>
+
+        <!-- <div>
+          {{ new Date(review.updated_at).toLocaleDateString() }}
+        </div> -->
+
+        <div class="my-4">
+          {{ review.content }}
+        </div>
+        <v-divider theme="dark"></v-divider>
+      </v-col>
+    </v-row>
+
+    <v-row class="pa-3" v-if="false">
       <!-- <v-col cols="12">
         <v-img
           :src="'https://image.tmdb.org/t/p/original/' + movie.backdrop_path"
@@ -22,6 +158,7 @@
           "
         ></v-img
       ></v-col> -->
+
       <v-col cols="12">
         <!-- <div class="text-center mb-2">
           <span v-for="(item, index) in movie.genres">
@@ -29,14 +166,28 @@
             <span v-if="index != movie.genres.length - 1">|</span>
           </span>
         </div> -->
-        <v-img
+        <!-- <v-img
           cover
           height="500px"
           class="poster elevation-6"
           :src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
           :lazy-src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
-        ></v-img>
+        ></v-img> -->
+        <div v-if="trailer" class="video-wrap iframe-container">
+          <iframe
+            width="560"
+            height="315"
+            class="elevation-12"
+            style="border-radius: 10px"
+            :src="`https://www.youtube.com/embed/${trailer.key}`"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
       </v-col>
+
       <!-- <v-col cols="12">
         <v-img
           h
@@ -144,7 +295,7 @@
 <script>
 import MoviesAPI from "@/api/movies";
 import UserLists from "@/components/UserLists.vue";
-import ListAPI from "@/api/tmdb-lists";
+import ListAPI from "@/api/tmdb";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { mapActions } from "pinia";
 export default {
@@ -161,6 +312,10 @@ export default {
       videoWindow: 0,
       trailerModal: false,
       trailer: null,
+      cast: [],
+      crew: [],
+      similarTitles: [],
+      reviews: [],
     };
   },
   components: { UserLists },
@@ -217,6 +372,25 @@ export default {
         this.providers = resp.data.results.US;
       });
     },
+    getCast(id) {
+      MoviesAPI.getCast(id, "movie", {}).then((resp) => {
+        console.log(resp, "cast resp");
+        this.cast = resp.data.cast;
+        this.crew = resp.data.crew;
+      });
+    },
+    getSimilar(id) {
+      MoviesAPI.getSimilar(id, "movie", {}).then((resp) => {
+        console.log(resp, "recs resp");
+        this.similarTitles = resp.data;
+      });
+    },
+    getReviews(id) {
+      MoviesAPI.getReviews(id, "movie", {}).then((resp) => {
+        console.log(resp, "reviews resp");
+        this.reviews = resp.data.results;
+      });
+    },
     getVideos(id) {
       MoviesAPI.indexVideos(id, "movie", {}).then((resp) => {
         this.videos = resp.data.results;
@@ -233,15 +407,21 @@ export default {
         console.log(resp.data.results, "videos");
       });
     },
+    toggleWatched() {
+      // this.showSnackbar({ message: "Watched!" });
+    },
   },
   mounted() {
     this.getDetails(this.$route.params.id);
     this.getWatchProviders(this.$route.params.id);
     this.getVideos(this.$route.params.id);
+    this.getCast(this.$route.params.id);
+    this.getSimilar(this.$route.params.id);
+    this.getReviews(this.$route.params.id);
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 :root {
   // --my-color: "https://image.tmdb.org/t/p/original//eSVu1FvGPy86TDo4hQbpuHx55DJ.jpg";
   --my-color: black;
@@ -259,12 +439,17 @@ export default {
 }
 
 #detail-wrap {
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  // overflow-x: hidden;
   // border: 2px solid red;
+  z-index: 0;
+  // background-color: transparent;
   // background-color: blue;
-  // color: white;
+  color: white;
+  background-color: black;
 
-  padding: 20px;
+  // padding: 20px;
   position: relative;
   // background-size: cover;
   // background: var(--custom-bkg);
@@ -288,5 +473,53 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.overlay {
+  // border: 1px solid blue;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  // border-radius: 0 0 10px 10px;
+  // background: linear-gradient(hsl(0 0% 0% / 0), hsla(0, 0%, 0%, 0.774));
+  background-image: linear-gradient(to bottom, transparent 0%, black 100%);
+}
+// .gradient {
+//   border-radius: 0 0 10px 10px;
+//   background-image: linear-gradient(to bottom, transparent 0%, black 90%);
+// }
+
+.chip-flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+}
+.image-container {
+  position: relative;
+  width: 100%; /* Set the desired width for your image container */
+  height: 0; /* Set the desired height for your image container */
+  padding-bottom: 56.25%; /* Set the aspect ratio of your image (e.g. 16:9 = 9 / 16 = 0.5625) */
+}
+
+.image-overlay {
+  width: 100%;
+  height: 100%;
+}
+
+.gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(
+    to bottom,
+    transparent,
+    black
+  ); /* Adjust the gradient colors and direction as desired */
 }
 </style>

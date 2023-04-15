@@ -20,9 +20,9 @@
               </div>
             </template>
           </v-img>
-          <div class="overlay"></div>
+          <!-- <div class="overlay"></div> -->
           <!-- <score-circle v-if="imageLoaded" :score="score" class="score" /> -->
-          <poster-rating v-if="imageLoaded" :score="score" class="score" />
+          <!-- <poster-rating v-if="imageLoaded" :score="score" class="score" /> -->
         </div>
       </template>
     </v-hover>
@@ -51,7 +51,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .img-wrap {
   position: relative;
   transition: 0.3s;

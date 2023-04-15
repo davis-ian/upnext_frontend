@@ -4,16 +4,25 @@
       <v-btn @click="getUserLists()">Check Lists</v-btn>
     </div> -->
 
-    <v-list nav>
+    <!-- :class="handleInList(list) ? 'inactive' : 'active'" -->
+    <v-list class="transparent" nav>
       <v-list-item
         class="mb-2"
-        style="border: 1px solid #e5e5e5; border-radius: 40px"
+        style="border: 1px solid #e5e5e5; color: white; border-radius: 40px"
         @click="handleRowClick(list)"
         v-for="(list, index) in lists"
         :key="index"
         :value="list"
-        active-color="primary"
-        >{{ list.props.name }}
+      >
+        <!-- {{ list }} -->
+        <div class="px-4" style="display: flex; justify-content: space-between">
+          {{ list.props.name }}
+          <span v-if="showListStatus">
+            <font-awesome-icon
+              :icon="list.in_list ? 'fa-solid fa-minus' : 'fa-solid fa-plus'"
+            ></font-awesome-icon>
+          </span>
+        </div>
         <!-- <template v-if="canDelete" v-slot:append>
           <v-btn
             @click.stop="deleteList(list.props.tmdbId, list.key)"
@@ -42,8 +51,8 @@
   </div>
 </template>
 <script>
-// import ListAPI from "@/api/tmdb-lists";
-import UserListAPI from "@/api/lists";
+import ListAPI from "@/api/tmdb";
+import UpnextAPI from "@/api/upnext";
 export default {
   data() {
     return {
@@ -51,6 +60,8 @@ export default {
       isAuthenticated: this.$auth0.isAuthenticated,
       isLoading: this.$auth0.isLoading,
       lists: [],
+      statuses: [],
+      showListStatus: false,
       creatingList: false,
       listName: "",
       userId: this.$auth0.user.value["https://nextup.com/userId"],
@@ -67,6 +78,14 @@ export default {
     },
   },
   methods: {
+    handleInList(list) {
+      if (this.showListStatus) {
+        if (list.in_list) {
+          return true;
+        }
+      }
+      return false;
+    },
     getListDetail(id) {
       this.$router.push(`/list/${id}`);
       //   console.log(id);
@@ -79,24 +98,20 @@ export default {
         this.getListDetail(item.key);
       }
     },
-    getUserLists() {
-      this.$emit("loadstart");
-      const id = this.user["https://nextup.com/userId"];
-      console.log(id, "getting list for id");
-      UserListAPI.index(id)
-        .then((resp) => {
-          console.log(resp, "user lists");
-          this.lists = resp.data;
-        })
-        .catch((err) => {
-          console.log(err, "error");
-        })
-        .finally(() => {
-          this.$emit("loadend");
-        });
+    async getUserLists() {
+      try {
+        this.$emit("loadstart");
+        const { data } = await UpnextAPI.getListsForUser(this.userId);
+        this.lists = data;
+        // this.checkStatusAllLists(this.lists);
+      } catch (err) {
+        console.log(err, "error");
+      } finally {
+        this.$emit("loadend");
+      }
     },
     deleteList(id, key) {
-      UserListAPI.delete(id, key)
+      UpnextAPI.deleteList(id, key)
         .then((resp) => {
           console.log("deleted");
           this.getUserLists(this.userId);
@@ -111,12 +126,9 @@ export default {
         return;
       }
       if (!userId > 0) {
-        console.log("no user id");
-        console.log(userId);
-        console.log(this.$auth0.user.value["https://nextup.com/userId"]);
         return;
       }
-      UserListAPI.create(name, userId)
+      UpnextAPI.createList(name, userId)
         .then((resp) => {
           this.creatingList = false;
           this.getUserLists();
@@ -125,14 +137,46 @@ export default {
           console.log(error, "error");
         });
     },
+    checkStatusAllLists(arr) {
+      let promises = [];
+      for (let i = 0; i < arr.length; i++) {
+        promises.push(
+          ListAPI.showListStatus(arr[i].props.tmdbId, {
+            movie_id: this.$route.params.id,
+          }).then((response) => {
+            this.lists[i] = {
+              ...this.lists[i],
+              in_list: response.data.item_present,
+            };
+          })
+        );
+      }
+      Promise.all(promises).then(() => {
+        this.showListStatus = true;
+      });
+    },
   },
-  mounted() {
-    console.log("list mounted");
-    this.getUserLists();
+  async mounted() {
+    await this.getUserLists();
+
+    if (this.$route.params.id) {
+      console.log(this.$route.params.id, "media id");
+    }
   },
 };
 </script>
 <style lang="scss" scoped>
+.transparent {
+  background-color: transparent;
+}
+.active {
+  color: #00c853;
+  border: 1px solid #00c853 !important;
+}
+.inactive {
+  color: #ff5252;
+  border: 1px solid #ff5252 !important;
+}
 .delete-btn {
   opacity: 0.4;
 }

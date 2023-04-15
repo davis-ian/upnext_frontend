@@ -74,7 +74,7 @@
 <script>
 import MoviesAPI from "@/api/movies";
 import UserLists from "@/components/UserLists.vue";
-import ListAPI from "@/api/tmdb-lists";
+import ListAPI from "@/api/tmdb";
 export default {
   data() {
     return {
