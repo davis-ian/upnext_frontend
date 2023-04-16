@@ -17,7 +17,7 @@
         <!-- {{ list }} -->
         <div class="px-4" style="display: flex; justify-content: space-between">
           {{ list.props.name }}
-          {{ handleInList(list) }}
+          <!-- {{ handleInList(list) }} -->
           <span v-if="showListStatus">
             <font-awesome-icon
               :icon="list.in_list ? 'fa-solid fa-minus' : 'fa-solid fa-plus'"
