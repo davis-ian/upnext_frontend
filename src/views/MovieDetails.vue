@@ -83,8 +83,13 @@
 
       <v-col cols="12">
         <div style="display: flex; flex-direction: column; gap: 10px">
-          <v-btn variant="tonal">Add to list</v-btn>
-          <v-btn variant="tonal">Watch</v-btn>
+          <v-btn @click="addToList" variant="tonal">Add to list</v-btn>
+          <v-btn
+            @click="toggleWatched"
+            :color="watched ? '#23d9a5' : ''"
+            variant="tonal"
+            >{{ watched ? "Watched" : "Watch" }}</v-btn
+          >
           <v-btn variant="tonal">Rate</v-btn>
         </div>
       </v-col>
@@ -150,15 +155,6 @@
     </v-row>
 
     <v-row class="pa-3" v-if="false">
-      <!-- <v-col cols="12">
-        <v-img
-          :src="'https://image.tmdb.org/t/p/original/' + movie.backdrop_path"
-          :lazy-src="
-            'https://image.tmdb.org/t/p/original/' + movie.backdrop_path
-          "
-        ></v-img
-      ></v-col> -->
-
       <v-col cols="12">
         <!-- <div class="text-center mb-2">
           <span v-for="(item, index) in movie.genres">
@@ -277,10 +273,11 @@
     </v-dialog>
 
     <v-dialog v-model="listModal">
-      <v-card>
+      <v-card theme="dark">
         <v-card-title>Your Lists</v-card-title>
         <v-progress-linear v-if="listLoading" indeterminate></v-progress-linear>
         <user-lists
+          :hidden-lists="[watchedList.props.tmdbId]"
           @loadstart="listLoading = true"
           @loadend="listLoading = false"
           :canDelete="false"
@@ -296,6 +293,7 @@
 import MoviesAPI from "@/api/movies";
 import UserLists from "@/components/UserLists.vue";
 import ListAPI from "@/api/tmdb";
+import UpnextAPI from "@/api/upnext";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { mapActions } from "pinia";
 export default {
@@ -316,13 +314,16 @@ export default {
       crew: [],
       similarTitles: [],
       reviews: [],
+      user: this.$auth0.user,
+      upcomingList: [],
+      watchedList: [],
+      watched: false,
     };
   },
   components: { UserLists },
   methods: {
     ...mapActions(useSnackbarStore, ["showSnackbar"]),
     handleListRowClick(item) {
-      console.log("row clicked", item);
       let params = {
         list_id: item.props.tmdbId,
         items: [
@@ -335,18 +336,14 @@ export default {
 
       ListAPI.addItems(params)
         .then((resp) => {
-          console.log(resp, "resp");
           this.listModal = false;
           this.showSnackbar({ message: "Added to list!" });
         })
         .catch((error) => {
           console.log(error, "error");
         });
-
-      console.log(params);
     },
     addToList(movie) {
-      console.log(movie, "movie deets");
       this.listModal = true;
     },
     setBackground(url) {
@@ -360,11 +357,10 @@ export default {
     getDetails(id) {
       MoviesAPI.show(id, "/movie/", {}).then((resp) => {
         this.movie = resp.data;
-        console.log(resp.data, "movie data");
+
         this.backdropPath =
           "https://image.tmdb.org/t/p/original/" + this.movie.backdrop_path;
         this.setBackground(this.backdropPath);
-        console.log(this.backdropPath, "path");
       });
     },
     getWatchProviders(id) {
@@ -374,20 +370,17 @@ export default {
     },
     getCast(id) {
       MoviesAPI.getCast(id, "movie", {}).then((resp) => {
-        console.log(resp, "cast resp");
         this.cast = resp.data.cast;
         this.crew = resp.data.crew;
       });
     },
     getSimilar(id) {
       MoviesAPI.getSimilar(id, "movie", {}).then((resp) => {
-        console.log(resp, "recs resp");
         this.similarTitles = resp.data;
       });
     },
     getReviews(id) {
       MoviesAPI.getReviews(id, "movie", {}).then((resp) => {
-        console.log(resp, "reviews resp");
         this.reviews = resp.data.results;
       });
     },
@@ -401,18 +394,79 @@ export default {
             x.type == "Trailer"
         );
         if (trailer) {
-          console.log(trailer, "found");
           this.trailer = trailer;
         }
-        console.log(resp.data.results, "videos");
       });
     },
-    toggleWatched() {
-      // this.showSnackbar({ message: "Watched!" });
+    async toggleWatched() {
+      let params = {
+        list_id: this.watchedList.props.tmdbId,
+        items: [
+          {
+            media_type: "movie",
+            media_id: this.movie.id,
+          },
+        ],
+      };
+
+      if (this.watched) {
+        ListAPI.removeItems(params.list_id, params.items).then((resp) => {
+          console.log("removed from list", resp);
+          this.watched = false;
+          this.showSnackbar({ message: "Removed from watched list" });
+        });
+      } else {
+        ListAPI.addItems(params).then((resp) => {
+          console.log("added to list", resp);
+          this.watched = true;
+          this.showSnackbar({ message: "Watched!" });
+        });
+      }
+
+      // this.getListStatus(this.watchedList.props.tmdbId, this.movie.id, "movie")
+      //   .then((resp) => {
+      //     console.log("watched status", resp);
+      //     // this.watched = true;
+      //   })
+      //   .catch((err) => {
+      //     console.log(err, "not in list");
+      //     // this.watched = false;
+      //   });
+    },
+    async getList(id) {
+      const { data } = await UpnextAPI.getList(id);
+      return data;
+    },
+    async getListStatus(list_id, item_id, type) {
+      return ListAPI.showListStatus(list_id, {
+        // media_id: this.$route.params.id,
+        media_id: item_id,
+        media_type: type,
+      });
     },
   },
-  mounted() {
+  async mounted() {
     this.getDetails(this.$route.params.id);
+
+    if (this.isAuthenticated) {
+      this.upcomingList = await this.getList(
+        this.$auth0.user.value["https://nextup.com/upcomingListId"]
+      );
+      this.watchedList = await this.getList(
+        this.$auth0.user.value["https://nextup.com/watchedListId"]
+      );
+
+      this.getListStatus(this.watchedList.props.tmdbId, this.movie.id, "movie")
+        .then((resp) => {
+          console.log("watched status", resp);
+          this.watched = true;
+        })
+        .catch((err) => {
+          console.log(err, "not in list");
+          this.watched = false;
+        });
+    }
+
     this.getWatchProviders(this.$route.params.id);
     this.getVideos(this.$route.params.id);
     this.getCast(this.$route.params.id);

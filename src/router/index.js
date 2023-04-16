@@ -2,6 +2,8 @@ import { createWebHistory, createRouter } from "vue-router";
 
 import { authGuard, useAuth0 } from "@auth0/auth0-vue";
 
+import { customAuthGuard } from "@/auth/authGuard";
+
 import Home from "@/views/Home.vue";
 import UserProfile from "@/views/UserProfile.vue";
 import MovieDetails from "@/views/MovieDetails.vue";
@@ -25,7 +27,7 @@ const routes = [
     path: "/profile",
     name: "Profile",
     component: UserProfile,
-    // beforeEnter: extendedAuthGuard,
+    // beforeEnter: customAuthGuard,
   },
   {
     path: "/movie/:id",

@@ -53,6 +53,7 @@
 import UserLists from "@/components/UserLists.vue";
 import ListAPI from "@/api/tmdb";
 import UpnextAPI from "@/api/upnext";
+import { useAuthStore } from "@/stores/user";
 export default {
   data() {
     return {
@@ -104,6 +105,10 @@ export default {
           console.log(error, "error");
         });
     },
+  },
+  mounted() {
+    const userStore = useAuthStore();
+    console.log(userStore.user, "pinia user");
   },
 };
 </script>

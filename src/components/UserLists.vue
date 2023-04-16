@@ -17,6 +17,7 @@
         <!-- {{ list }} -->
         <div class="px-4" style="display: flex; justify-content: space-between">
           {{ list.props.name }}
+          {{ handleInList(list) }}
           <span v-if="showListStatus">
             <font-awesome-icon
               :icon="list.in_list ? 'fa-solid fa-minus' : 'fa-solid fa-plus'"
@@ -61,6 +62,8 @@ export default {
       isLoading: this.$auth0.isLoading,
       lists: [],
       statuses: [],
+      upcomingList: [],
+      watchedList: [],
       showListStatus: false,
       creatingList: false,
       listName: "",
@@ -75,6 +78,10 @@ export default {
     customRowClick: {
       type: Boolean,
       default: false,
+    },
+    hiddenLists: {
+      type: Array,
+      required: false,
     },
   },
   methods: {
@@ -103,6 +110,16 @@ export default {
         this.$emit("loadstart");
         const { data } = await UpnextAPI.getListsForUser(this.userId);
         this.lists = data;
+
+        console.log(this.lists, "lists");
+        if (this.hiddenLists) {
+          let found = this.lists.find(
+            (x) =>
+              (this.lists = this.lists.filter(
+                (item) => !this.hiddenLists.includes(item.props.tmdbId)
+              ))
+          );
+        }
         // this.checkStatusAllLists(this.lists);
       } catch (err) {
         console.log(err, "error");
@@ -142,7 +159,8 @@ export default {
       for (let i = 0; i < arr.length; i++) {
         promises.push(
           ListAPI.showListStatus(arr[i].props.tmdbId, {
-            movie_id: this.$route.params.id,
+            media_id: this.$route.params.id,
+            media_type: "movie",
           }).then((response) => {
             this.lists[i] = {
               ...this.lists[i],
@@ -158,7 +176,7 @@ export default {
   },
   async mounted() {
     await this.getUserLists();
-
+    this.checkStatusAllLists(this.lists);
     if (this.$route.params.id) {
       console.log(this.$route.params.id, "media id");
     }

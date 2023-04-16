@@ -92,18 +92,35 @@ export default {
         { data }
       );
   },
+  // showListStatus(id, params) {
+  //   return axios
+  //     .create({
+  //       headers: {
+  //         Authorization:
+  //           "Bearer " + import.meta.env.VITE_APP_MOVIE_ACCESS_TOKEN,
+  //       },
+  //     })
+  //     .get(import.meta.env.VITE_APP_MOVIE_API_V3 + `/list/${id}/item_status`, {
+  //       params: {
+  //         ...params,
+  //         api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+  //       },
+  //     });
+  // },
+
+  // Returns 200 success = true if in list and 404 success = false if not in list
   showListStatus(id, params) {
     return axios
       .create({
         headers: {
+          "Content-Type": "application/json;charset=utf-8",
           Authorization:
             "Bearer " + import.meta.env.VITE_APP_MOVIE_ACCESS_TOKEN,
         },
       })
-      .get(import.meta.env.VITE_APP_MOVIE_API_V3 + `/list/${id}/item_status`, {
+      .get(import.meta.env.VITE_APP_MOVIE_API_V4 + `/list/${id}/item_status`, {
         params: {
           ...params,
-          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
         },
       });
   },

@@ -225,7 +225,9 @@ export default {
         .then((resp) => {
           // console.log(resp, "resp");
           // this.list = resp.data;
-          ListAPI.show(resp.data.props.tmdbId).then((tList) => {
+          ListAPI.show(resp.data.props.tmdbId, {
+            sort_by: "original_order.desc",
+          }).then((tList) => {
             console.log(tList, "tList");
             this.list = tList.data;
           });
