@@ -78,12 +78,23 @@
       </v-col>
 
       <v-col cols="12">
+        <div>
+          <v-chip
+            class="mr-1"
+            v-for="(genre, i) in movie.genres"
+            color="#23d9a5"
+            >{{ genre.name }}</v-chip
+          >
+        </div>
+      </v-col>
+
+      <v-col cols="12">
         <p>{{ movie.overview }}</p>
       </v-col>
 
       <v-col cols="12">
         <div style="display: flex; flex-direction: column; gap: 10px">
-          <v-btn @click="addToList" variant="tonal">Add to list</v-btn>
+          <!-- <v-btn @click="addToList" variant="tonal">Add to list</v-btn> -->
           <v-btn
             :color="upcoming ? '#23d9a5' : ''"
             @click="toggleWatchlist"
@@ -97,14 +108,6 @@
             >{{ watched ? "Watched" : "Watch" }}</v-btn
           >
           <v-btn variant="tonal">Rate</v-btn>
-        </div>
-      </v-col>
-
-      <v-col cols="12">
-        <div class="chip-flex">
-          <v-chip v-for="(genre, i) in movie.genres" color="#23d9a5">{{
-            genre.name
-          }}</v-chip>
         </div>
       </v-col>
 
