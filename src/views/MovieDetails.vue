@@ -453,6 +453,15 @@ export default {
           this.watched = true;
           this.showSnackbar({ message: "Watched!" });
         });
+
+        //if in upcoming list, remove when watched
+        await ListAPI.removeItems(
+          this.upcomingList.props.tmdbId,
+          params.items
+        ).then((resp) => {
+          console.log("removed from list", resp);
+          this.upcoming = false;
+        });
       }
     },
     async getList(id) {
