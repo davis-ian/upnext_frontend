@@ -85,6 +85,12 @@
         <div style="display: flex; flex-direction: column; gap: 10px">
           <v-btn @click="addToList" variant="tonal">Add to list</v-btn>
           <v-btn
+            :color="upcoming ? '#23d9a5' : ''"
+            @click="toggleWatchlist"
+            variant="tonal"
+            >Watchlist</v-btn
+          >
+          <v-btn
             @click="toggleWatched"
             :color="watched ? '#23d9a5' : ''"
             variant="tonal"
@@ -318,11 +324,37 @@ export default {
       upcomingList: [],
       watchedList: [],
       watched: false,
+      upcoming: false,
     };
   },
   components: { UserLists },
   methods: {
     ...mapActions(useSnackbarStore, ["showSnackbar"]),
+    async toggleWatchlist() {
+      let params = {
+        list_id: this.upcomingList.props.tmdbId,
+        items: [
+          {
+            media_type: "movie",
+            media_id: this.movie.id,
+          },
+        ],
+      };
+
+      if (this.upcoming) {
+        await ListAPI.removeItems(params.list_id, params.items).then((resp) => {
+          console.log("removed from list", resp);
+          this.upcoming = false;
+          this.showSnackbar({ message: "Removed from watched list" });
+        });
+      } else {
+        await ListAPI.addItems(params).then((resp) => {
+          console.log("added to list", resp);
+          this.upcoming = true;
+          this.showSnackbar({ message: "Watched!" });
+        });
+      }
+    },
     handleListRowClick(item) {
       let params = {
         list_id: item.props.tmdbId,
@@ -410,38 +442,77 @@ export default {
       };
 
       if (this.watched) {
-        ListAPI.removeItems(params.list_id, params.items).then((resp) => {
+        await ListAPI.removeItems(params.list_id, params.items).then((resp) => {
           console.log("removed from list", resp);
           this.watched = false;
           this.showSnackbar({ message: "Removed from watched list" });
         });
       } else {
-        ListAPI.addItems(params).then((resp) => {
+        await ListAPI.addItems(params).then((resp) => {
           console.log("added to list", resp);
           this.watched = true;
           this.showSnackbar({ message: "Watched!" });
         });
       }
-
-      // this.getListStatus(this.watchedList.props.tmdbId, this.movie.id, "movie")
-      //   .then((resp) => {
-      //     console.log("watched status", resp);
-      //     // this.watched = true;
-      //   })
-      //   .catch((err) => {
-      //     console.log(err, "not in list");
-      //     // this.watched = false;
-      //   });
     },
     async getList(id) {
       const { data } = await UpnextAPI.getList(id);
       return data;
     },
     async getListStatus(list_id, item_id, type) {
-      return ListAPI.showListStatus(list_id, {
-        // media_id: this.$route.params.id,
-        media_id: item_id,
-        media_type: type,
+      try {
+        const resp = await ListAPI.showListStatus(list_id, {
+          // media_id: this.$route.params.id,
+          media_id: item_id,
+          media_type: type,
+        });
+        console.log(resp, "watched status");
+        this.watched = true;
+      } catch (err) {
+        console.log(err, "not in list");
+        this.watched = false;
+      }
+    },
+    checkStatusAllLists(arr) {
+      let promises = [];
+
+      for (let i = 0; i < arr.length; i++) {
+        promises.push(
+          ListAPI.showListStatus(arr[i].props.tmdbId, {
+            media_id: this.$route.params.id,
+            media_type: "movie",
+          })
+            .then((response) => {
+              console.log(response);
+
+              arr[i] = {
+                ...arr[i],
+                in_list: true,
+              };
+
+              if (arr[i].props.tmdbId == this.watchedList.props.tmdbId) {
+                this.watched = true;
+              }
+              if (arr[i].props.tmdbId == this.upcomingList.props.tmdbId) {
+                this.upcoming = true;
+              }
+            })
+            .catch((err) => {
+              arr[i] = {
+                ...arr[i],
+                in_list: false,
+              };
+              if (arr[i].props.tmdbId == this.watchedList.props.tmdbId) {
+                this.watched = false;
+              }
+              if (arr[i].props.tmdbId == this.upcomingList.props.tmdbId) {
+                this.upcoming = false;
+              }
+            })
+        );
+      }
+      Promise.all(promises).then(() => {
+        console.log("done checking statuses", arr);
       });
     },
   },
@@ -456,15 +527,20 @@ export default {
         this.$auth0.user.value["https://nextup.com/watchedListId"]
       );
 
-      this.getListStatus(this.watchedList.props.tmdbId, this.movie.id, "movie")
-        .then((resp) => {
-          console.log("watched status", resp);
-          this.watched = true;
-        })
-        .catch((err) => {
-          console.log(err, "not in list");
-          this.watched = false;
-        });
+      const mainLists = [this.upcomingList, this.watchedList];
+      console.log(mainLists);
+      this.checkStatusAllLists(mainLists);
+
+      // await this.getListStatus(
+      //   this.watchedList.props.tmdbId,
+      //   this.movie.id,
+      //   "movie"
+      // );
+      // await this.getListStatus(
+      //   this.upcomingList.props.tmdbId,
+      //   this.movie.id,
+      //   "movie"
+      // );
     }
 
     this.getWatchProviders(this.$route.params.id);

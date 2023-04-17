@@ -180,6 +180,7 @@ export default {
     if (this.$route.params.id) {
       console.log(this.$route.params.id, "media id");
     }
+    console.log(this.lists, "after status");
   },
 };
 </script>
