@@ -1,95 +1,95 @@
 <template>
   <div class="pa-3">
     <div v-if="list">
-      <div style="display: flex; justify-content: space-between">
-        <h1>{{ list.name }}</h1>
+      <v-row>
+        <v-col cols="12">
+          <div style="display: flex; justify-content: space-between">
+            <h1>{{ list.name }}</h1>
 
-        <v-menu v-if="canDeleteList">
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props">...</v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-              v-for="(item, index) in menuItems"
-              :key="index"
-              @click="handleMenuClick(index)"
-            >
-              <template v-slot:prepend>
-                <div style="width: 2rem">
-                  <font-awesome-icon :icon="item.icon"></font-awesome-icon>
-                </div>
+            <v-menu v-if="canDeleteList">
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props">...</v-btn>
               </template>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </div>
+              <v-list>
+                <v-list-item
+                  v-for="(item, index) in menuItems"
+                  :key="index"
+                  @click="handleMenuClick(index)"
+                >
+                  <template v-slot:prepend>
+                    <div style="width: 2rem">
+                      <font-awesome-icon :icon="item.icon"></font-awesome-icon>
+                    </div>
+                  </template>
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
+        </v-col>
+      </v-row>
 
-      <div>
-        <v-row>
-          <v-col
-            @click="goToDetails(result)"
-            cols="12"
-            v-for="(result, index) in list.results"
-          >
-            <div>
-              <v-row>
-                <v-col>
-                  <div style="position: relative">
-                    <v-img
-                      class="img"
-                      max-height="100%"
-                      :src="
-                        'https://image.tmdb.org/t/p/original/' +
-                        (result.poster_path || '')
-                      "
-                      :lazy-src="
-                        'https://image.tmdb.org/t/p/original/' +
-                        (result.poster_path || '')
-                      "
-                    >
-                      <template v-slot:placeholder>
-                        <div
-                          class="d-flex align-center justify-center fill-height"
-                        >
-                          <v-progress-circular
-                            color="grey-lighten-4"
-                            indeterminate
-                          ></v-progress-circular>
-                        </div>
-                      </template>
-                      <v-btn
-                        color="red"
-                        @click.stop="deleteStep1(result)"
-                        class="delete-btn"
-                        density="compact"
-                        icon
+      <v-row>
+        <v-col
+          @click="goToDetails(result)"
+          class="pa-1"
+          cols="4"
+          sm="4"
+          md="3"
+          v-for="(result, index) in list.results"
+        >
+          <div>
+            <v-row>
+              <v-col>
+                <div style="position: relative">
+                  <v-img
+                    class="img"
+                    max-height="100%"
+                    :src="
+                      'https://image.tmdb.org/t/p/original/' +
+                      (result.poster_path || '')
+                    "
+                    :lazy-src="
+                      'https://image.tmdb.org/t/p/original/' +
+                      (result.poster_path || '')
+                    "
+                  >
+                    <template v-slot:placeholder>
+                      <div
+                        class="d-flex align-center justify-center fill-height"
                       >
-                        <font-awesome-icon :icon="['fas', 'x']" />
-                      </v-btn>
-                    </v-img>
-                  </div>
-                </v-col>
-                <v-col>
+                        <v-progress-circular
+                          color="grey-lighten-4"
+                          indeterminate
+                        ></v-progress-circular>
+                      </div>
+                    </template>
+                    <!-- <v-btn
+                      color="red"
+                      @click.stop="deleteStep1(result)"
+                      class="delete-btn"
+                      density="compact"
+                      icon
+                    >
+                      <font-awesome-icon :icon="['fas', 'x']" />
+                    </v-btn> -->
+                  </v-img>
+                </div>
+              </v-col>
+              <!-- <v-col>
                   <h4>{{ result.title }}</h4>
                   <p>
                     {{ new Date(result.release_date).toLocaleDateString() }}
                   </p>
-                  <!-- <v-progress-circular
-                    :model-value="result.vote_average * 10"
-                    :color="getProgressColor(result.vote_average * 10)"
-                  >
-                    {{ result.vote_average * 10 }}
-                  </v-progress-circular> -->
                   <score-circle
                     :score="result.vote_average * 10"
                   ></score-circle>
-                </v-col>
-              </v-row>
-            </div>
-          </v-col>
-        </v-row>
-      </div>
+                </v-col> -->
+            </v-row>
+          </div>
+        </v-col>
+      </v-row>
+
       <v-dialog max-width="500px" v-model="deleteConfirmModal">
         <v-card v-if="selectedItem">
           <v-card-item>
