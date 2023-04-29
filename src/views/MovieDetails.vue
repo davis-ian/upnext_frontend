@@ -118,7 +118,7 @@
         <h3>Where To Watch</h3>
         <v-divider theme="dark"></v-divider>
         <div v-if="providers.length == 0">
-          <p>No provider data availale.</p>
+          <p>No provider data available.</p>
         </div>
         <v-expansion-panels eager theme="dark">
           <v-expansion-panel v-if="providers.flatrate">
