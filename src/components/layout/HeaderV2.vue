@@ -216,8 +216,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  // z-index: 2 !important;
-
+  z-index: 2 !important;
   position: fixed !important;
   bottom: 10px;
   left: 0;
