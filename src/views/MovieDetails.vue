@@ -23,8 +23,27 @@
 
     <v-row class="pa-3 mt-0" v-if="media">
       <v-col cols="8">
+        <div class="mb-2" v-if="contentRating">
+          <v-chip size="small" color="#23d9a5" variant="outlined" label>{{
+            contentRating
+          }}</v-chip>
+          <v-btn
+            v-if="trailer"
+            class="ml-2"
+            size="small"
+            @click="toggleTrailerVisible"
+            variant="tonal"
+          >
+            <span>Trailer</span>
+            <font-awesome-icon
+              class="ml-2"
+              icon="fa-solid fa-play"
+            ></font-awesome-icon>
+          </v-btn>
+        </div>
         <h2 v-if="mediaType == 'movie'">{{ media.title }}</h2>
         <h2 v-if="mediaType == 'tv'">{{ media.name }}</h2>
+
         <div>
           <font-awesome-icon
             class="mr-2"
@@ -69,6 +88,7 @@
           />
           {{ mediaType == "tv" ? "TV" : "Movie" }}
         </div>
+
         <!-- <div v-if="crew[0]">
           <span>Directed by</span> <strong>{{ crew[0].name }}</strong>
         </div> -->
@@ -81,6 +101,26 @@
           :src="handleImgSrc(media.poster_path, 500)"
           :lazy-src="handleImgSrc(media.poster_path, 500)"
         ></v-img>
+      </v-col>
+
+      <v-col cols="12">
+        <v-expand-transition>
+          <div v-show="trailerVisible">
+            <div v-if="trailer" class="video-wrap iframe-container">
+              <iframe
+                width="560"
+                height="315"
+                class="elevation-12"
+                style="border-radius: 10px"
+                :src="`https://www.youtube.com/embed/${trailer.key}`"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+        </v-expand-transition>
       </v-col>
 
       <v-col cols="12">
@@ -98,26 +138,51 @@
 
       <v-col cols="12">
         <div style="display: flex; flex-direction: column; gap: 10px">
+          <v-alert
+            v-if="!isAuthenticated"
+            color="#23d9a5"
+            title="Account Required"
+            text="Please log in or create an accout to access these features."
+            variant="tonal"
+          ></v-alert>
           <v-btn
             :color="upcoming ? '#23d9a5' : ''"
             @click="toggleWatchlist"
             variant="tonal"
-            >Watchlist
+            :disabled="!isAuthenticated"
+          >
+            <span> Watchlist </span>
+            <font-awesome-icon
+              class="ml-2"
+              :icon="upcoming ? 'fa-solid fa-minus' : 'fa-solid fa-plus'"
+            ></font-awesome-icon>
           </v-btn>
           <v-btn
             @click="toggleWatched"
             :color="watched ? '#23d9a5' : ''"
             variant="tonal"
-            >{{ watched ? "Watched" : "Watch" }}</v-btn
+            :disabled="!isAuthenticated"
           >
-          <v-btn variant="tonal">Rate</v-btn>
+            <span>Watched</span>
+            <font-awesome-icon
+              class="ml-2"
+              :icon="watched ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"
+            ></font-awesome-icon>
+          </v-btn>
+          <!-- <font-awesome-icon
+              class="ml-2"
+              :icon="
+                watched ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle'
+              "
+            ></font-awesome-icon> -->
+          <!-- <v-btn variant="tonal">Rate</v-btn> -->
         </div>
       </v-col>
 
       <v-col cols="12">
         <h3>Where To Watch</h3>
-        <v-divider theme="dark"></v-divider>
         <div v-if="providers.length == 0">
+          <v-divider theme="dark"></v-divider>
           <p>No provider data available.</p>
         </div>
         <v-expansion-panels eager theme="dark">
@@ -235,7 +300,7 @@
     </v-row>
 
     <v-row class="pa-3" v-if="false">
-      <v-col cols="12">
+      <!-- <v-col cols="12">
         <div v-if="trailer" class="video-wrap iframe-container">
           <iframe
             width="560"
@@ -249,7 +314,7 @@
             allowfullscreen
           ></iframe>
         </div>
-      </v-col>
+      </v-col> -->
 
       <v-col
         style="
@@ -368,17 +433,19 @@ export default {
       videoWindow: 0,
       trailerModal: false,
       trailer: null,
+      trailerVisible: false,
       cast: [],
       crew: [],
       similarTitles: [],
       reviews: [],
       user: this.$auth0.user,
-      upcomingList: [],
-      watchedList: [],
+      upcomingList: null,
+      watchedList: null,
       watched: false,
       upcoming: false,
       mediaType: "",
       providerPanels: [],
+      contentRating: null,
     };
   },
   components: { UserLists },
@@ -389,6 +456,9 @@ export default {
   },
   methods: {
     ...mapActions(useSnackbarStore, ["showSnackbar"]),
+    toggleTrailerVisible() {
+      this.trailerVisible = !this.trailerVisible;
+    },
     handleImgSrc(ext, width = null) {
       if (ext) {
         if (width) {
@@ -523,6 +593,13 @@ export default {
         }
       );
     },
+    getExternalIds(id, collection) {
+      MoviesAPI.getExternalIds(id, `${this.$route.params.mediaType}`, {}).then(
+        (resp) => {
+          console.log(resp, "external Ids");
+        }
+      );
+    },
     async toggleWatched() {
       let params = {
         list_id: this.watchedList.props.tmdbId,
@@ -547,14 +624,14 @@ export default {
           this.showSnackbar({ message: "Watched!" });
         });
 
-        //if in upcoming list, remove when watched
-        await ListAPI.removeItems(
-          this.upcomingList.props.tmdbId,
-          params.items
-        ).then((resp) => {
-          console.log("removed from list", resp);
-          this.upcoming = false;
-        });
+        // //if in upcoming list, remove when watched
+        // await ListAPI.removeItems(
+        //   this.upcomingList.props.tmdbId,
+        //   params.items
+        // ).then((resp) => {
+        //   console.log("removed from list", resp);
+        //   this.upcoming = false;
+        // });
       }
     },
     async getList(id) {
@@ -574,6 +651,25 @@ export default {
         console.log(err, "not in list");
         this.watched = false;
       }
+    },
+    getContentRating(id) {
+      MoviesAPI.getContentRatings(id).then((resp) => {
+        console.log(resp.data.results, "content ratings");
+        let usRating = resp.data.results.find((x) => x.iso_3166_1 == "US");
+        if (usRating) {
+          console.log(usRating, "FOUND");
+          this.contentRating = usRating.rating;
+        }
+      });
+    },
+    getReleaseDates(id) {
+      MoviesAPI.getReleaseDates(id).then((resp) => {
+        console.log(resp.data.results, "release dates");
+        let usRating = resp.data.results.find((x) => x.iso_3166_1 == "US");
+        if (usRating) {
+          this.contentRating = usRating.release_dates[0].certification;
+        }
+      });
     },
     checkStatusAllLists(arr) {
       let promises = [];
@@ -619,7 +715,7 @@ export default {
     },
   },
   async mounted() {
-    this.getDetails(this.$route.params.id);
+    await this.getDetails(this.$route.params.id);
 
     useAuth0.isAuthenticated;
     console.log(this.isAuthenticated, "auth on mount");
@@ -641,6 +737,13 @@ export default {
     this.getCast(this.$route.params.id);
     this.getSimilar(this.$route.params.id);
     this.getReviews(this.$route.params.id);
+
+    if (this.mediaType == "tv") {
+      this.getContentRating(this.$route.params.id);
+    } else {
+      this.getReleaseDates(this.$route.params.id);
+    }
+    // this.getExternalIds(this.$route.params.id);
   },
 };
 </script>
@@ -658,7 +761,7 @@ export default {
 }
 .poster {
   // border: 2px solid red;
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
 #detail-wrap {

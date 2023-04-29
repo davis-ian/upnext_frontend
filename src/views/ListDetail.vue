@@ -50,14 +50,8 @@
                   <v-img
                     class="img"
                     max-height="100%"
-                    :src="
-                      'https://image.tmdb.org/t/p/original/' +
-                      (result.poster_path || '')
-                    "
-                    :lazy-src="
-                      'https://image.tmdb.org/t/p/original/' +
-                      (result.poster_path || '')
-                    "
+                    :src="handleImgSrc(result.poster_path)"
+                    :lazy-src="handleImgSrc(result.poster_path)"
                   >
                     <template v-slot:placeholder>
                       <div
@@ -170,6 +164,15 @@ export default {
     },
   },
   methods: {
+    handleImgSrc(path) {
+      if (path) {
+        return (
+          "https://ik.imagekit.io/upnext/tr:w-300/https://image.tmdb.org/t/p/original/" +
+          path
+        );
+      }
+      return null;
+    },
     handleMenuClick(val) {
       switch (val) {
         case 0:
@@ -211,9 +214,9 @@ export default {
     goToDetails(item) {
       if (item.hasOwnProperty("first_air_date")) {
         console.log("this is a tv show");
-        this.$router.push("/tv/" + item.id);
+        this.$router.push("/media/tv/" + item.id);
       } else {
-        this.$router.push("/movie/" + item.id);
+        this.$router.push("/media/movie/" + item.id);
       }
     },
     cancelDelete() {
@@ -276,6 +279,10 @@ export default {
 //     cursor: pointer;
 //   }
 // }
+
+.img {
+  border-radius: 5px;
+}
 
 .delete-btn {
   opacity: 0;

@@ -1,10 +1,16 @@
 <template>
   <div>
-    <div class="pa-3">
-      <v-btn @click="$router.back()" variant="tonal">
-        <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
-      </v-btn>
+    <div class="pa-2">
+      <div style="display: flex; justify-content: space-between">
+        <v-btn @click="$router.back()" variant="tonal">
+          <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
+        </v-btn>
+        <v-btn theme="dark" @click="newList">
+          <font-awesome-icon icon="fa-solid fa-plus"></font-awesome-icon>
+        </v-btn>
+      </div>
       <div
+        class="mt-2"
         style="
           display: flex;
           justify-content: space-between;
@@ -12,7 +18,6 @@
         "
       >
         <h2>Lists</h2>
-        <v-btn theme="dark" @click="newList" icon>+</v-btn>
       </div>
       <div v-if="loading">
         <v-progress-linear indeterminate></v-progress-linear>

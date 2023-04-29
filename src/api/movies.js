@@ -55,6 +55,42 @@ export default {
       }
     );
   },
+  getExternalIds(id, collection, params) {
+    return axios.get(
+      import.meta.env.VITE_APP_MOVIE_API_V3 +
+        `/${collection}/${id}/external_ids`,
+      {
+        params: {
+          ...params,
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
+      }
+    );
+  },
+  getContentRatings(id, params) {
+    return axios.get(
+      import.meta.env.VITE_APP_MOVIE_API_V3 + `/tv/${id}/content_ratings`,
+      {
+        params: {
+          ...params,
+
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
+      }
+    );
+  },
+  getReleaseDates(id, params) {
+    return axios.get(
+      import.meta.env.VITE_APP_MOVIE_API_V3 + `/movie/${id}/release_dates`,
+      {
+        params: {
+          ...params,
+
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
+      }
+    );
+  },
   getRecommendations(id, collection, params) {
     return axios.get(
       import.meta.env.VITE_APP_MOVIE_API_V3 +

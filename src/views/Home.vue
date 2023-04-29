@@ -59,8 +59,8 @@
             <detailed-poster
               @click="goToDetails(result)"
               :score="result.vote_average"
-              :src="handleImgSrc(result)"
-              :lazy-src="handleImgSrc(result)"
+              :src="handleImgSrc(result.poster_path)"
+              :lazy-src="handleImgSrc(result.poster_path)"
             />
           </div>
         </v-col>
@@ -141,11 +141,11 @@ export default {
     }, 500),
   },
   methods: {
-    handleImgSrc(item) {
-      if (item.poster_path) {
+    handleImgSrc(path) {
+      if (path) {
         return (
           "https://ik.imagekit.io/upnext/tr:w-300/https://image.tmdb.org/t/p/original/" +
-          (item.poster_path || "")
+          path
         );
       }
       return null;

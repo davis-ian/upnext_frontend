@@ -56,9 +56,9 @@ export default {
   position: relative;
   transition: 0.3s;
   // border: 2px solid red;
-  border-radius: 10px;
+  border-radius: 5px;
   .img {
-    border-radius: 10px;
+    border-radius: 5px;
     cursor: pointer;
   }
 }

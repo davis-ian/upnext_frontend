@@ -8,7 +8,7 @@
     <v-list class="transparent" nav>
       <v-list-item
         class="mb-2"
-        style="border: 1px solid #e5e5e5; color: white; border-radius: 40px"
+        style="border: 1px solid #e5e5e5; color: white"
         @click="handleRowClick(list)"
         v-for="(list, index) in lists"
         :key="index"
