@@ -68,6 +68,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 // FONT AWESOME ICONS
 // =============================================================================
 import {
+  faMagnifyingGlass,
   faEyeSlash,
   faEye,
   faCircleCheck,
@@ -93,7 +94,6 @@ import {
   faX,
   faStream,
   faMinus,
-  faE,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
@@ -101,6 +101,7 @@ import { faCircle } from "@fortawesome/free-regular-svg-icons";
 // import { fa } from "@fortawesome/free-regular-svg-icons";
 
 library.add(
+  faMagnifyingGlass,
   faEyeSlash,
   faEye,
   faCircle,
