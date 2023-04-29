@@ -6,8 +6,8 @@
           <div style="z-index: -1; height: 100; width: 100%" v-if="media">
             <v-img
               class="image-overlay"
-              :src="handleImgSrc(media.backdrop_path)"
-              :lazy-src="handleImgSrc(media.backdrop_path)"
+              :src="handleImgSrc(media.backdrop_path, 800)"
+              :lazy-src="handleImgSrc(media.backdrop_path, 800)"
             >
               <div class="gradient-overlay"></div>
               <v-btn variant="tonal" @click="$router.back" class="ma-3"
@@ -78,8 +78,8 @@
         <v-img
           cover
           class="poster elevation-6"
-          :src="handleImgSrc(media.poster_path)"
-          :lazy-src="handleImgSrc(media.poster_path)"
+          :src="handleImgSrc(media.poster_path, 500)"
+          :lazy-src="handleImgSrc(media.poster_path, 500)"
         ></v-img>
       </v-col>
 

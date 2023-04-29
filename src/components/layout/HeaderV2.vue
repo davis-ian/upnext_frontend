@@ -210,14 +210,16 @@ export default {
 
 .expand-menu {
   // width: 100vw;
-  width: fit-content;
+  // width: 100%;
+  // width: fit-content;
   // border: 2px solid red;
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 2 !important;
+  // z-index: 2 !important;
+
   position: fixed !important;
-  bottom: 0;
+  bottom: 10px;
   left: 0;
   right: 0;
   margin: auto;
@@ -235,8 +237,8 @@ export default {
     flex-direction: column;
     justify-content: center;
     margin-bottom: 10px;
-    // width: 90%;
-    width: 0;
+    width: 90%;
+    // width: 0;
     // border: 2px solid green;
     transition: 0.3s;
   }
@@ -248,9 +250,9 @@ export default {
 
 .active-menu {
   transition: 0.3s;
-  width: 90%;
+
   .menu-content {
-    width: 100%;
+    // width: 100%;
   }
 }
 
@@ -280,5 +282,6 @@ export default {
   border: 1px solid white;
   color: white;
   border-radius: 10px;
+  // border: 2px solid blue !important;
 }
 </style>
