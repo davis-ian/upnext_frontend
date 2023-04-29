@@ -176,11 +176,11 @@ export default {
   },
   async mounted() {
     await this.getUserLists();
-    this.checkStatusAllLists(this.lists);
     if (this.$route.params.id) {
       console.log(this.$route.params.id, "media id");
+      this.checkStatusAllLists(this.lists);
+      console.log(this.lists, "after status");
     }
-    console.log(this.lists, "after status");
   },
 };
 </script>

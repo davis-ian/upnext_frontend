@@ -209,15 +209,20 @@ export default {
 }
 
 .expand-menu {
-  width: 100vw;
+  // width: 100vw;
+  width: fit-content;
+  // border: 2px solid red;
   display: flex;
   flex-direction: column;
   align-items: center;
   z-index: 2 !important;
   position: fixed !important;
-  bottom: 10px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
   background-color: transparent;
-  padding: 10px;
+  // padding: 10px;
   transition: 0.3s;
 
   .menu-content {
@@ -230,7 +235,9 @@ export default {
     flex-direction: column;
     justify-content: center;
     margin-bottom: 10px;
-    width: 90%;
+    // width: 90%;
+    width: 0;
+    // border: 2px solid green;
     transition: 0.3s;
   }
 }
@@ -241,6 +248,10 @@ export default {
 
 .active-menu {
   transition: 0.3s;
+  width: 90%;
+  .menu-content {
+    width: 100%;
+  }
 }
 
 .active-content {

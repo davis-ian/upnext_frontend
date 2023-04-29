@@ -2,9 +2,6 @@
   <div class="layout-wrap">
     <!-- <Header class="header" ref="header" /> -->
     <div class="layout-content">
-      <!-- <div class="top-nav">
-        <h2 @click="$router.push('/')">UpNext</h2>
-      </div> -->
       <slot class="main-content"> </slot>
     </div>
     <div class="bottom-nav">
@@ -44,10 +41,12 @@ export default {
 .layout-content {
   overflow-x: hidden;
   padding-bottom: 100px;
-}
-.main-content {
+  // border: 2px solid red;
   height: 100%;
 }
+// .main-content {
+//   height: 100%;
+// }
 
 .top-nav {
   position: sticky;
@@ -74,9 +73,9 @@ export default {
 
 /* Media query for mobile devices */
 @media (max-width: 767px) {
-  .layout-wrap {
-    max-width: 100%;
-    overflow-x: hidden; /* Set to "hidden" to disable horizontal scrolling */
-  }
+  // .layout-wrap {
+  //   max-width: 100%;
+  //   overflow-x: hidden; /* Set to "hidden" to disable horizontal scrolling */
+  // }
 }
 </style>

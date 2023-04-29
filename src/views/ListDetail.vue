@@ -3,6 +3,11 @@
     <div v-if="list">
       <v-row>
         <v-col cols="12">
+          <v-btn @click="$router.back()" variant="tonal">
+            <font-awesome-icon
+              icon="fa-solid fa-arrow-left"
+            ></font-awesome-icon>
+          </v-btn>
           <div style="display: flex; justify-content: space-between">
             <h1>{{ list.name }}</h1>
 
@@ -29,7 +34,7 @@
         </v-col>
       </v-row>
 
-      <v-row>
+      <v-row class="pa-2">
         <v-col
           @click="goToDetails(result)"
           class="pa-1"
@@ -159,8 +164,8 @@ export default {
   computed: {
     canDeleteList() {
       return (
-        this.$route.params.id != this.userDetails.props.watchedList &&
-        this.$route.params.id != this.userDetails.props.upcomingList
+        this.$route.params?.id != this.userDetails?.props?.watchedList &&
+        this.$route.params?.id != this.userDetails?.props?.upcomingList
       );
     },
   },

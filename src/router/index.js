@@ -27,13 +27,12 @@ const routes = [
     path: "/profile",
     name: "Profile",
     component: UserProfile,
-    // beforeEnter: customAuthGuard,
+    beforeEnter: authGuard,
   },
   {
-    path: "/movie/:id",
+    path: "/media/:mediaType/:id/",
     name: "MovieDetails",
     component: MovieDetails,
-    // beforeEnter: extendedAuthGuard,
   },
   {
     path: "/tv/:id",
@@ -44,11 +43,13 @@ const routes = [
     path: "/list/create",
     name: "CreateList",
     component: CreateList,
+    beforeEnter: authGuard,
   },
   {
     path: "/list/:id",
     name: "ListDetail",
     component: ListDetail,
+    beforeEnter: authGuard,
   },
   {
     path: "/test",
@@ -59,6 +60,7 @@ const routes = [
     path: "/lists",
     name: "Lists",
     component: Lists,
+    beforeEnter: authGuard,
     // beforeEnter: extendedAuthGuard,
   },
 ];

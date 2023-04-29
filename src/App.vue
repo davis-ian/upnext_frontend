@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main id="main">
-      <Layout id="layout">
+      <Layout>
         <router-view />
         <page-loader v-if="isLoading" />
         <snackbar />
@@ -39,9 +39,9 @@ export default {
 @import "@/css/global.css";
 
 #main {
-  // main css
-  height: 100vh;
-  overflow: hidden;
+  // // main css
+  // height: 100vh;
+  // overflow: hidden;
 }
 
 * {
@@ -55,13 +55,14 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
+  // border: 2px solid green;
+  // overflow: hidden;
 }
 
 @media only screen and (max-width: 700px) {
-  #main {
-    max-width: 100%;
-    overflow-x: hidden;
-  }
+  // #main {
+  //   max-width: 100%;
+  //   overflow-x: hidden;
+  // }
 }
 </style>

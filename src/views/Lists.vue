@@ -1,17 +1,24 @@
 <template>
   <div>
-    <div
-      class="pa-3"
-      style="display: flex; justify-content: space-between; align-items: center"
-    >
-      <h2>Lists</h2>
-      <v-btn theme="dark" @click="newList" icon>+</v-btn>
+    <div class="pa-3">
+      <v-btn @click="$router.back()" variant="tonal">
+        <font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon>
+      </v-btn>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <h2>Lists</h2>
+        <v-btn theme="dark" @click="newList" icon>+</v-btn>
+      </div>
+      <div v-if="loading">
+        <v-progress-linear indeterminate></v-progress-linear>
+        <p class="text-center pt-2">Gathering your lists</p>
+      </div>
     </div>
-    <div v-if="loading">
-      <v-progress-linear indeterminate></v-progress-linear>
-      <p class="text-center pt-2">Gathering your lists</p>
-    </div>
-
     <div>
       <user-lists
         @loadstart="loading = true"

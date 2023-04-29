@@ -59,10 +59,8 @@
             <detailed-poster
               @click="goToDetails(result)"
               :score="result.vote_average"
-              :src="
-                'https://image.tmdb.org/t/p/original/' +
-                (result.poster_path || '')
-              "
+              :src="handleImgSrc(result)"
+              :lazy-src="handleImgSrc(result)"
             />
           </div>
         </v-col>
@@ -143,12 +141,21 @@ export default {
     }, 500),
   },
   methods: {
+    handleImgSrc(item) {
+      if (item.poster_path) {
+        return (
+          "https://ik.imagekit.io/upnext/tr:w-300/https://image.tmdb.org/t/p/original/" +
+          (item.poster_path || "")
+        );
+      }
+      return null;
+    },
     goToDetails(item) {
       if (item.hasOwnProperty("first_air_date")) {
         console.log("this is a tv show");
-        this.$router.push("/tv/" + item.id);
+        this.$router.push("media/tv/" + item.id);
       } else {
-        this.$router.push("/movie/" + item.id);
+        this.$router.push("media/movie/" + item.id);
       }
     },
     getResults(collection) {

@@ -1,30 +1,13 @@
 <template>
   <div id="detail-wrap">
-    <!-- <h1>Details</h1> -->
-    <!-- 
-    <div style="position: relative">
-      <div style="z-index: -1; width: 100%" v-if="movie">
-        <v-img
-          :src="'https://image.tmdb.org/t/p/original/' + movie.backdrop_path"
-          :lazy-src="
-            'https://image.tmdb.org/t/p/original/' + movie.backdrop_path
-          "
-        ></v-img>
-        <div class="overlay gradient"></div>
-      </div>
-    </div> -->
     <v-row no-gutters>
       <v-col>
         <div class="image-container">
-          <div style="z-index: -1; height: 100; width: 100%" v-if="movie">
+          <div style="z-index: -1; height: 100; width: 100%" v-if="media">
             <v-img
               class="image-overlay"
-              :src="
-                'https://image.tmdb.org/t/p/original/' + movie.backdrop_path
-              "
-              :lazy-src="
-                'https://image.tmdb.org/t/p/original/' + movie.backdrop_path
-              "
+              :src="handleImgSrc(media.backdrop_path)"
+              :lazy-src="handleImgSrc(media.backdrop_path)"
             >
               <div class="gradient-overlay"></div>
               <v-btn variant="tonal" @click="$router.back" class="ma-3"
@@ -32,36 +15,59 @@
                   icon="fa-solid fa-arrow-left"
                 ></font-awesome-icon
               ></v-btn>
-              <!-- <v-col cols="12">
-        <v-btn class="ma-3" size="small" variant="tonal" @click="$router.back"
-          ><font-awesome-icon icon="fa-solid fa-arrow-left"></font-awesome-icon
-        ></v-btn>
-      </v-col> -->
             </v-img>
           </div>
         </div>
       </v-col>
     </v-row>
 
-    <v-row class="pa-3 mt-0" v-if="movie">
+    <v-row class="pa-3 mt-0" v-if="media">
       <v-col cols="8">
-        <h2>{{ movie.title }}</h2>
-        <div style="display: flex; flex-direction: column">
-          <span v-if="movie.release_date">{{
-            movie.release_date.split("-")[0]
-          }}</span>
-          <span>{{ movie.runtime }} min</span>
-        </div>
-
+        <h2 v-if="mediaType == 'movie'">{{ media.title }}</h2>
+        <h2 v-if="mediaType == 'tv'">{{ media.name }}</h2>
         <div>
           <font-awesome-icon
             class="mr-2"
             icon="fa-solid fa-star"
           ></font-awesome-icon>
           <span>
-            <strong>{{ Math.round(movie.vote_average * 10) / 10 }}</strong>
+            <strong>{{ Math.round(media.vote_average * 10) / 10 }}</strong>
             /10
           </span>
+        </div>
+
+        <div
+          v-if="mediaType == 'movie'"
+          style="display: flex; flex-direction: column"
+        >
+          <span v-if="media.release_date">{{
+            media.release_date.split("-")[0]
+          }}</span>
+          <span>{{ media.runtime }} min</span>
+        </div>
+
+        <div v-if="mediaType == 'tv'">
+          <div>
+            {{ media.number_of_seasons }} Season{{
+              media.number_of_seasons > 1 ? "s" : ""
+            }}
+          </div>
+          <div>
+            <span>
+              {{ media.first_air_date.split("-")[0] }}
+            </span>
+            -
+            <span>
+              {{ media.in_production ? "" : media.last_air_date.split("-")[0] }}
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <font-awesome-icon
+            :icon="mediaType == 'tv' ? 'fa-solid fa-tv' : 'fa-solid fa-film'"
+          />
+          {{ mediaType == "tv" ? "TV" : "Movie" }}
         </div>
         <!-- <div v-if="crew[0]">
           <span>Directed by</span> <strong>{{ crew[0].name }}</strong>
@@ -72,35 +78,32 @@
         <v-img
           cover
           class="poster elevation-6"
-          :src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
-          :lazy-src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
+          :src="handleImgSrc(media.poster_path)"
+          :lazy-src="handleImgSrc(media.poster_path)"
         ></v-img>
       </v-col>
 
       <v-col cols="12">
-        <div>
-          <v-chip
-            class="mr-1"
-            v-for="(genre, i) in movie.genres"
-            color="#23d9a5"
-            >{{ genre.name }}</v-chip
-          >
+        <div style="display: flex; flex-wrap: wrap; gap: 7px">
+          <v-chip v-for="(genre, i) in media.genres" color="#23d9a5">{{
+            genre.name
+          }}</v-chip>
         </div>
       </v-col>
 
       <v-col cols="12">
-        <p>{{ movie.overview }}</p>
+        <h3>{{ media.tagline }}</h3>
+        <p>{{ media.overview }}</p>
       </v-col>
 
       <v-col cols="12">
         <div style="display: flex; flex-direction: column; gap: 10px">
-          <!-- <v-btn @click="addToList" variant="tonal">Add to list</v-btn> -->
           <v-btn
             :color="upcoming ? '#23d9a5' : ''"
             @click="toggleWatchlist"
             variant="tonal"
-            >Watchlist</v-btn
-          >
+            >Watchlist
+          </v-btn>
           <v-btn
             @click="toggleWatched"
             :color="watched ? '#23d9a5' : ''"
@@ -112,8 +115,80 @@
       </v-col>
 
       <v-col cols="12">
+        <h3>Where To Watch</h3>
+        <v-divider theme="dark"></v-divider>
+        <div v-if="providers.length == 0">
+          <p>No provider data availale.</p>
+        </div>
+        <v-expansion-panels eager theme="dark">
+          <v-expansion-panel v-if="providers.flatrate">
+            <v-expansion-panel-title>Streaming</v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <div class="pa-2" v-for="item in providers.flatrate">
+                <div style="display: flex; align-items: center">
+                  <div style="width: 50px">
+                    <v-img
+                      style="max-width: 100%; border-radius: 5px"
+                      :src="handleImgSrc(item.logo_path)"
+                    ></v-img>
+                  </div>
+
+                  <div class="ml-2">
+                    <p>{{ item.provider_name }}</p>
+                  </div>
+                </div>
+              </div>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+
+          <v-expansion-panel v-if="providers.free">
+            <v-expansion-panel-title>Network</v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <div class="pa-2" v-for="item in providers.free">
+                <div style="display: flex; align-items: center">
+                  <div style="width: 50px">
+                    <v-img
+                      style="max-width: 100%; border-radius: 5px"
+                      :src="handleImgSrc(item.logo_path, 50)"
+                    ></v-img>
+                  </div>
+
+                  <div class="ml-2">
+                    <p>{{ item.provider_name }}</p>
+                  </div>
+                </div>
+              </div>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+
+          <v-expansion-panel v-if="providers.buy">
+            <v-expansion-panel-title>Buy</v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <div class="pa-2" v-for="item in providers.buy">
+                <div style="display: flex; align-items: center">
+                  <div style="width: 50px">
+                    <v-img
+                      style="max-width: 100%; border-radius: 5px"
+                      :src="handleImgSrc(item.logo_path)"
+                    ></v-img>
+                  </div>
+
+                  <div class="ml-2">
+                    <p>{{ item.provider_name }}</p>
+                  </div>
+                </div>
+              </div>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-col>
+
+      <v-col cols="12">
         <h3>Reviews</h3>
         <v-divider theme="dark"></v-divider>
+        <div v-if="reviews.length == 0">
+          <p>No reviews found.</p>
+        </div>
       </v-col>
 
       <v-col cols="12" v-for="(review, i) in reviews">
@@ -152,10 +227,6 @@
           </v-col>
         </v-row>
 
-        <!-- <div>
-          {{ new Date(review.updated_at).toLocaleDateString() }}
-        </div> -->
-
         <div class="my-4">
           {{ review.content }}
         </div>
@@ -165,19 +236,6 @@
 
     <v-row class="pa-3" v-if="false">
       <v-col cols="12">
-        <!-- <div class="text-center mb-2">
-          <span v-for="(item, index) in movie.genres">
-            <span class="pa-1">{{ item.name }}</span>
-            <span v-if="index != movie.genres.length - 1">|</span>
-          </span>
-        </div> -->
-        <!-- <v-img
-          cover
-          height="500px"
-          class="poster elevation-6"
-          :src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
-          :lazy-src="'https://image.tmdb.org/t/p/original/' + movie.poster_path"
-        ></v-img> -->
         <div v-if="trailer" class="video-wrap iframe-container">
           <iframe
             width="560"
@@ -192,16 +250,6 @@
           ></iframe>
         </div>
       </v-col>
-
-      <!-- <v-col cols="12">
-        <v-img
-          h
-          :src="'https://image.tmdb.org/t/p/original/' + movie.backdrop_path"
-          :lazy-src="
-            'https://image.tmdb.org/t/p/original/' + movie.backdrop_path
-          "
-        ></v-img
-      ></v-col> -->
 
       <v-col
         style="
@@ -221,7 +269,7 @@
             trailer</v-btn
           >
         </div>
-        <p>{{ movie.overview }}</p>
+        <p>{{ media.overview }}</p>
       </v-col>
       <!-- <v-col cols="12">
         <div class="video-wrap iframe-container">
@@ -305,11 +353,12 @@ import ListAPI from "@/api/tmdb";
 import UpnextAPI from "@/api/upnext";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { mapActions } from "pinia";
+import { useAuth0 } from "@auth0/auth0-vue";
 export default {
   data() {
     return {
-      movie: null,
-      loading: true,
+      media: null,
+      loading: this.$auth0.isLoading,
       providers: [],
       videos: [],
       listModal: false,
@@ -328,18 +377,40 @@ export default {
       watchedList: [],
       watched: false,
       upcoming: false,
+      mediaType: "",
+      providerPanels: [],
     };
   },
   components: { UserLists },
+  watch: {
+    isAuthenticated() {
+      console.log("auth change");
+    },
+  },
   methods: {
     ...mapActions(useSnackbarStore, ["showSnackbar"]),
+    handleImgSrc(ext, width = null) {
+      if (ext) {
+        if (width) {
+          return (
+            `https://ik.imagekit.io/upnext/tr:w-${width}/https://image.tmdb.org/t/p/original/` +
+            (ext || "")
+          );
+        } else
+          return (
+            `https://ik.imagekit.io/upnext/https://image.tmdb.org/t/p/original/` +
+            (ext || "")
+          );
+      }
+      return null;
+    },
     async toggleWatchlist() {
       let params = {
         list_id: this.upcomingList.props.tmdbId,
         items: [
           {
-            media_type: "movie",
-            media_id: this.movie.id,
+            media_type: this.$route.params.mediaType,
+            media_id: this.media.id,
           },
         ],
       };
@@ -363,8 +434,8 @@ export default {
         list_id: item.props.tmdbId,
         items: [
           {
-            media_type: "movie",
-            media_id: this.movie.id,
+            media_type: this.$route.params.mediaType,
+            media_id: this.media.id,
           },
         ],
       };
@@ -378,7 +449,7 @@ export default {
           console.log(error, "error");
         });
     },
-    addToList(movie) {
+    addToList(media) {
       this.listModal = true;
     },
     setBackground(url) {
@@ -389,57 +460,76 @@ export default {
 
       // console.log(target);
     },
-    getDetails(id) {
-      MoviesAPI.show(id, "/movie/", {}).then((resp) => {
-        this.movie = resp.data;
+    async getDetails(id) {
+      return MoviesAPI.show(id, `/${this.$route.params.mediaType}/`, {}).then(
+        (resp) => {
+          this.media = resp.data;
+          if (this.media.hasOwnProperty("first_air_date")) {
+            this.mediaType = "tv";
+          } else {
+            this.mediaType = "movie";
+          }
+          console.log(this.media, "MEDIA details");
 
-        this.backdropPath =
-          "https://image.tmdb.org/t/p/original/" + this.movie.backdrop_path;
-        this.setBackground(this.backdropPath);
-      });
+          // this.backdropPath =
+          //   "https://image.tmdb.org/t/p/original/" + this.media.backdrop_path;
+          // this.setBackground(this.backdropPath);
+        }
+      );
     },
     getWatchProviders(id) {
-      MoviesAPI.indexProviders(id, "movie", {}).then((resp) => {
-        this.providers = resp.data.results.US;
-      });
+      MoviesAPI.indexProviders(id, `${this.$route.params.mediaType}`, {}).then(
+        (resp) => {
+          this.providers = resp.data.results.US || [];
+          console.log(this.providers, "PROVIDERS");
+        }
+      );
     },
     getCast(id) {
-      MoviesAPI.getCast(id, "movie", {}).then((resp) => {
-        this.cast = resp.data.cast;
-        this.crew = resp.data.crew;
-      });
+      MoviesAPI.getCast(id, `${this.$route.params.mediaType}`, {}).then(
+        (resp) => {
+          this.cast = resp.data.cast;
+          this.crew = resp.data.crew;
+        }
+      );
     },
     getSimilar(id) {
-      MoviesAPI.getSimilar(id, "movie", {}).then((resp) => {
-        this.similarTitles = resp.data;
-      });
+      MoviesAPI.getSimilar(id, `${this.$route.params.mediaType}`, {}).then(
+        (resp) => {
+          this.similarTitles = resp.data;
+        }
+      );
     },
     getReviews(id) {
-      MoviesAPI.getReviews(id, "movie", {}).then((resp) => {
-        this.reviews = resp.data.results;
-      });
+      MoviesAPI.getReviews(id, `${this.$route.params.mediaType}`, {}).then(
+        (resp) => {
+          this.reviews = resp.data.results;
+        }
+      );
     },
     getVideos(id) {
-      MoviesAPI.indexVideos(id, "movie", {}).then((resp) => {
-        this.videos = resp.data.results;
-        const trailer = this.videos.find(
-          (x) =>
-            x.name.includes("Official") &&
-            x.site == "YouTube" &&
-            x.type == "Trailer"
-        );
-        if (trailer) {
-          this.trailer = trailer;
+      MoviesAPI.indexVideos(id, `${this.$route.params.mediaType}`, {}).then(
+        (resp) => {
+          this.videos = resp.data.results;
+          const trailer = this.videos.find(
+            (x) =>
+              x.name.includes("Official") &&
+              x.site == "YouTube" &&
+              x.type == "Trailer"
+          );
+          if (trailer) {
+            this.trailer = trailer;
+          }
         }
-      });
+      );
     },
     async toggleWatched() {
       let params = {
         list_id: this.watchedList.props.tmdbId,
         items: [
           {
-            media_type: "movie",
-            media_id: this.movie.id,
+            media_type: `${this.$route.params.mediaType}`,
+            media_id: this.media.id,
           },
         ],
       };
@@ -492,7 +582,7 @@ export default {
         promises.push(
           ListAPI.showListStatus(arr[i].props.tmdbId, {
             media_id: this.$route.params.id,
-            media_type: "movie",
+            media_type: this.$route.params.mediaType,
           })
             .then((response) => {
               console.log(response);
@@ -531,6 +621,8 @@ export default {
   async mounted() {
     this.getDetails(this.$route.params.id);
 
+    useAuth0.isAuthenticated;
+    console.log(this.isAuthenticated, "auth on mount");
     if (this.isAuthenticated) {
       this.upcomingList = await this.getList(
         this.$auth0.user.value["https://nextup.com/upcomingListId"]
@@ -540,19 +632,8 @@ export default {
       );
 
       const mainLists = [this.upcomingList, this.watchedList];
-      console.log(mainLists);
+      console.log(mainLists, "got main lists");
       this.checkStatusAllLists(mainLists);
-
-      // await this.getListStatus(
-      //   this.watchedList.props.tmdbId,
-      //   this.movie.id,
-      //   "movie"
-      // );
-      // await this.getListStatus(
-      //   this.upcomingList.props.tmdbId,
-      //   this.movie.id,
-      //   "movie"
-      // );
     }
 
     this.getWatchProviders(this.$route.params.id);
