@@ -461,6 +461,10 @@ export default {
       console.log("auth change");
     },
     "$route.params.id": function (newId) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
       this.initDetails(newId);
     },
   },
