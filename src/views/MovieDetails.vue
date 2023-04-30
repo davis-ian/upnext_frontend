@@ -180,6 +180,11 @@
       </v-col>
 
       <v-col cols="12">
+        <h3>Other Reccomendations</h3>
+        <coverflow :items="recommendations" />
+      </v-col>
+
+      <v-col cols="12">
         <h3>Where To Watch</h3>
         <div v-if="providers.length == 0">
           <v-divider theme="dark"></v-divider>
@@ -412,6 +417,7 @@
   </div>
 </template>
 <script>
+import Coverflow from "@/components/UI/Coverflow.vue";
 import MoviesAPI from "@/api/movies";
 import UserLists from "@/components/UserLists.vue";
 import ListAPI from "@/api/tmdb";
@@ -436,7 +442,7 @@ export default {
       trailerVisible: false,
       cast: [],
       crew: [],
-      similarTitles: [],
+      recommendations: [],
       reviews: [],
       user: this.$auth0.user,
       upcomingList: null,
@@ -446,12 +452,16 @@ export default {
       mediaType: "",
       providerPanels: [],
       contentRating: null,
+      sliderItems: [],
     };
   },
-  components: { UserLists },
+  components: { UserLists, Coverflow },
   watch: {
     isAuthenticated() {
       console.log("auth change");
+    },
+    "$route.params.id": function (newId) {
+      this.initDetails(newId);
     },
   },
   methods: {
@@ -563,12 +573,24 @@ export default {
         }
       );
     },
-    getSimilar(id) {
-      MoviesAPI.getSimilar(id, `${this.$route.params.mediaType}`, {}).then(
-        (resp) => {
-          this.similarTitles = resp.data;
-        }
-      );
+    mapToLabelImageArray(data) {
+      return data.map((item) => {
+        return {
+          label: item.title,
+          image: item.poster_path,
+        };
+      });
+    },
+    getRecommendations(id) {
+      MoviesAPI.getRecommendations(
+        id,
+        `${this.$route.params.mediaType}`,
+        {}
+      ).then((resp) => {
+        this.recommendations = resp.data.results;
+        console.log(resp.data, "similar");
+        this.sliderItems = this.mapToLabelImageArray(resp.data.results);
+      });
     },
     getReviews(id) {
       MoviesAPI.getReviews(id, `${this.$route.params.mediaType}`, {}).then(
@@ -713,37 +735,42 @@ export default {
         console.log("done checking statuses", arr);
       });
     },
+    async initDetails(id) {
+      await this.getDetails(id);
+
+      useAuth0.isAuthenticated;
+      console.log(this.isAuthenticated, "auth on mount");
+      if (this.isAuthenticated) {
+        this.upcomingList = await this.getList(
+          this.$auth0.user.value["https://nextup.com/upcomingListId"]
+        );
+        this.watchedList = await this.getList(
+          this.$auth0.user.value["https://nextup.com/watchedListId"]
+        );
+
+        const mainLists = [this.upcomingList, this.watchedList];
+        console.log(mainLists, "got main lists");
+        this.checkStatusAllLists(mainLists);
+      }
+
+      this.getWatchProviders(id);
+      this.getVideos(id);
+      this.getCast(id);
+      this.getRecommendations(id);
+      this.getReviews(id);
+
+      if (this.mediaType == "tv") {
+        this.getContentRating(id);
+      } else {
+        this.getReleaseDates(id);
+      }
+
+      // this.getExternalIds(this.$route.params.id);
+    },
   },
+
   async mounted() {
-    await this.getDetails(this.$route.params.id);
-
-    useAuth0.isAuthenticated;
-    console.log(this.isAuthenticated, "auth on mount");
-    if (this.isAuthenticated) {
-      this.upcomingList = await this.getList(
-        this.$auth0.user.value["https://nextup.com/upcomingListId"]
-      );
-      this.watchedList = await this.getList(
-        this.$auth0.user.value["https://nextup.com/watchedListId"]
-      );
-
-      const mainLists = [this.upcomingList, this.watchedList];
-      console.log(mainLists, "got main lists");
-      this.checkStatusAllLists(mainLists);
-    }
-
-    this.getWatchProviders(this.$route.params.id);
-    this.getVideos(this.$route.params.id);
-    this.getCast(this.$route.params.id);
-    this.getSimilar(this.$route.params.id);
-    this.getReviews(this.$route.params.id);
-
-    if (this.mediaType == "tv") {
-      this.getContentRating(this.$route.params.id);
-    } else {
-      this.getReleaseDates(this.$route.params.id);
-    }
-    // this.getExternalIds(this.$route.params.id);
+    this.initDetails(this.$route.params.id);
   },
 };
 </script>

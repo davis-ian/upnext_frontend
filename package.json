@@ -17,6 +17,7 @@
     "emailjs-com": "^3.2.0",
     "pinia": "^2.0.28",
     "roboto-fontface": "*",
+    "swiper": "^9.2.4",
     "vue": "^3.2.38",
     "vue-axios": "^3.5.2",
     "vue-router": "^4.1.6",

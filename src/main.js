@@ -58,6 +58,9 @@ import { createAuth0 } from "@auth0/auth0-vue";
 
 import axios from "axios";
 import VueAxios from "vue-axios";
+
+import "swiper/css";
+import Swiper from "swiper";
 // =============================================================================
 // FONT AWESOME CORE
 // =============================================================================
