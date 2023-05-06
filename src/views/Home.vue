@@ -1,117 +1,217 @@
 <template>
   <div id="home">
-    <!-- <div style="display: flex; flex-wrap: wrap; gap: 10px" class="pa-5">
-      <v-btn
-        v-for="sel in collections"
-        class="mr-3"
-        :variant="currentCollection == sel.value ? 'tonal' : 'outlined'"
-        @click="currentCollection = sel.value"
-        >{{ sel.name }}</v-btn
-      >
-    </div> -->
-    <!-- <div class="text-center px-5">
-      <h1>{{ collections[currentCollection].name }}</h1>
-    </div> -->
-
-    <!-- <v-row v-if="currentCollection == 3">
-      <v-col>
-        <div
-        style="
-        display: flex;
-              flex-direction: row;
-              justify-content: center;
-              /* border: 2px solid red; */
-              "
-              class="pa-5"
-              >
-              <v-text-field
-              style="max-width: 500px"
-              density="compact"
-              variant="solo"
-              clearable
-              @keydown.enter="startSearch"
-              v-model="searchText"
-              label="Search"
-              dense
-              >
-            </v-text-field>
-            <v-btn style="height: 40px" class="ml-2" @click="startSearch"
-            >search</v-btn
-            >
-          </div>
-        </v-col>
-        <v-col v-if="results.length == 0" class="text-center" cols="12">
-          <h1>What are we looking for today?</h1>
-        </v-col>
-      </v-row> -->
-
     <div>
-      <v-row no-gutters class="pa-3">
+      <v-row no-gutters class="pa-2">
         <v-col cols="12">
-          <h1 class="text-center">{{ collections[currentCollection].name }}</h1>
+          <v-tabs v-model="currentCollection" color="#23d9a5">
+            <v-tab
+              v-for="(item, index) in homeTabs"
+              :key="index"
+              :value="item.value"
+              >{{ item.label }}</v-tab
+            >
+          </v-tabs>
         </v-col>
-        <v-col class="my-2" cols="12">
-          <div style="display: flex; justify-content: space-between">
+        <v-col class="pa-1" v-if="currentCollection < 2" cols="12">
+          <div class="text-right">
             <v-btn
-              :color="currentCollection == 0 ? '#23d9a5' : ''"
-              variant="tonal"
-              @click="currentCollection = 0"
-              >Trending</v-btn
+              class="mb-2"
+              :variant="showProviders ? 'outlined' : 'plain'"
+              color="#23d9a5"
+              size="small"
+              @click="toggleProviders"
+              >Filter</v-btn
             >
-            <v-btn
-              :color="currentCollection == 3 ? '#23d9a5' : ''"
-              @click="showSearch = !showSearch"
-              variant="tonal"
-            >
-              <font-awesome-icon
-                icon="fa-solid fa-magnifying-glass"
-              ></font-awesome-icon>
-            </v-btn>
           </div>
           <v-expand-transition>
-            <div class="mt-2" v-show="showSearch">
-              <v-text-field
-                clearable
-                @keydown.enter="startSearch"
-                label="Search"
-                v-model="searchText"
-                autofocus=""
-              ></v-text-field>
+            <div v-show="showProviders">
+              <p>Providers</p>
+              <v-divider theme="dark" class="mb-2"></v-divider>
+              <popular-providers
+                @selection-changed="handleSelectionChange"
+                :popular-providers="popularProviders"
+              />
             </div>
           </v-expand-transition>
         </v-col>
-
-        <v-col
-          class="pa-1"
-          cols="4"
-          sm="4"
-          md="3"
-          v-for="(result, index) in results"
-          :key="index"
-        >
-          <div>
-            <detailed-poster
-              @click="goToDetails(result)"
-              :score="result.vote_average"
-              :src="handleImgSrc(result.poster_path)"
-              :lazy-src="handleImgSrc(result.poster_path)"
-            />
-          </div>
-        </v-col>
       </v-row>
-      <div>
-        <div class="pa-3 text-center">
-          <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
-          <!-- <span style="font-size: 0.9rem" id="target"
-            >{{ results.length }} of {{ totalPages * 20 }}</span
-          > -->
-          <span style="font-size: 0.9rem" id="target"></span>
-        </div>
-      </div>
+
+      <v-row no-gutters class="pa-2 pt-0">
+        <v-col cols="12">
+          <v-window v-model="currentCollection">
+            <v-window-item :value="0">
+              <v-row no-gutters>
+                <v-col
+                  class="pa-1"
+                  cols="4"
+                  sm="4"
+                  md="3"
+                  v-for="(result, index) in collections[currentCollection]
+                    .results"
+                  :key="index"
+                >
+                  <div>
+                    <detailed-poster
+                      @click="goToDetails(result)"
+                      :score="result.vote_average"
+                      :src="handleImgSrc(result.poster_path)"
+                      :lazy-src="handleImgSrc(result.poster_path)"
+                    />
+                  </div>
+                </v-col>
+                <v-col cols="12">
+                  <div>
+                    <div class="pa-3 text-center">
+                      <v-progress-linear
+                        v-if="loading"
+                        indeterminate
+                      ></v-progress-linear>
+
+                      <span style="font-size: 0.9rem" class="target"></span>
+                    </div>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-window-item>
+            <v-window-item eager :value="1">
+              <v-row no-gutters>
+                <v-col
+                  class="pa-1"
+                  cols="4"
+                  sm="4"
+                  md="3"
+                  v-for="(result, index) in collections[currentCollection]
+                    .results"
+                  :key="index"
+                >
+                  <div>
+                    <detailed-poster
+                      @click="goToDetails(result)"
+                      :score="result.vote_average"
+                      :src="handleImgSrc(result.poster_path)"
+                      :lazy-src="handleImgSrc(result.poster_path)"
+                    />
+                  </div>
+                </v-col>
+                <v-col cols="12">
+                  <div>
+                    <div class="pa-3 text-center">
+                      <v-progress-linear
+                        v-if="loading"
+                        indeterminate
+                      ></v-progress-linear>
+
+                      <span style="font-size: 0.9rem" class="target"></span>
+                    </div>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-window-item>
+            <v-window-item eager :value="2">
+              <v-row no-gutters>
+                <v-col cols="12">
+                  <div class="mt-2">
+                    <v-text-field
+                      clearable
+                      @keydown.enter="startSearch"
+                      label="Search"
+                      v-model="searchText"
+                      autofocus=""
+                    ></v-text-field>
+                  </div>
+                </v-col>
+
+                <v-col
+                  class="pa-1"
+                  cols="4"
+                  sm="4"
+                  md="3"
+                  v-for="(result, index) in collections[currentCollection]
+                    .results"
+                  :key="index"
+                >
+                  <div>
+                    <detailed-poster
+                      @click="goToDetails(result)"
+                      :score="result.vote_average"
+                      :src="handleImgSrc(result.poster_path)"
+                      :lazy-src="handleImgSrc(result.poster_path)"
+                    />
+                  </div>
+                </v-col>
+                <!-- <v-col cols="12">
+                  <div>
+                    <div class="pa-3 text-center">
+                      <v-progress-linear
+                        v-if="loading"
+                        indeterminate
+                      ></v-progress-linear>
+
+                      <span style="font-size: 0.9rem" class="target"></span>
+                    </div>
+                  </div>
+                </v-col> -->
+              </v-row>
+            </v-window-item>
+            <v-window-item :value="3">
+              <v-alert
+                v-if="!isAuthenticated"
+                color="#23d9a5"
+                title="Account Required"
+                variant="tonal"
+              >
+                Please <span @click="login" class="link">log in</span> or
+                <span @click="signUp" class="link">create an accout</span> to
+                access these features.</v-alert
+              >
+
+              <div v-if="isAuthenticated">
+                <user-lists :canDelete="true" ref="lists" />
+              </div>
+            </v-window-item>
+          </v-window>
+        </v-col>
+        <!-- <v-col cols="12">
+          <div>
+            <div class="pa-3 text-center">
+              <v-progress-linear
+                v-if="loading"
+                indeterminate
+              ></v-progress-linear>
+
+              <span style="font-size: 0.9rem" id="target"></span>
+            </div>
+          </div>
+        </v-col> -->
+      </v-row>
     </div>
   </div>
+
+  <v-dialog
+    v-model="showMenu"
+    position-fixed
+    hide-overlay
+    transition="dialog-bottom-transition"
+  >
+    <v-card class="menu-card" :style="{ height: menuHeight }">
+      <v-toolbar>
+        <v-toolbar-title>Menu</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="showMenu = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-list>
+        <v-list-item v-for="item in menuItems" :key="item.title" :to="item.to">
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-card>
+  </v-dialog>
 </template>
 <script>
+import UserLists from "@/components/UserLists.vue";
+import PopularProviders from "@/components/PopularProviders.vue";
 import MoviesAPI from "@/api/movies";
 import PageLoader from "@/components/UI/PageLoader.vue";
 import DetailedPoster from "@/components/UI/DetailedPoster.vue";
@@ -119,6 +219,31 @@ import { debounceV2 } from "@/utils/debounce";
 export default {
   data() {
     return {
+      isAuthenticated: this.$auth0.isAuthenticated,
+      popularProviders: [
+        { name: "Netflix", id: 8 },
+        { name: "Amazon Prime", id: 9 },
+        { name: "Disney +", id: 337 },
+        { name: "Apple TV", id: 350 },
+        { name: "Hulu", id: 15 },
+        { name: "HBO Max", id: 384 },
+        { name: "Peacock", id: 386 },
+        // { name: "Youtube", id: 192 },
+      ],
+      showMenu: false,
+      menuHeight: 0,
+      menuItems: [
+        { title: "Home", to: "/" },
+        { title: "About", to: "/about" },
+        { title: "Contact", to: "/contact" },
+      ],
+      selectedProviders: [],
+      homeTabs: [
+        { label: "Movies", value: 0 },
+        { label: "TV", value: 1 },
+        { label: "Search", value: 2 },
+        { label: "Lists", value: 3 },
+      ],
       results: [],
       searchResults: [],
       totalPages: 0,
@@ -128,58 +253,110 @@ export default {
       showSearch: false,
       loading: true,
       observer: null,
-
+      tab: 0,
+      showProviders: false,
+      updatingCollection: false,
+      monTypes: ["flatrate", "free", "ads", "rent", "buy"],
       collections: [
         {
           value: 0,
-          name: "Trending Now",
-          endpoint: "trending/all/day",
+          name: "Movies",
+          endpoint: "discover/movie",
+          collection: "movie",
+          results: [],
+          totalPages: 0,
+          pageTarget: "movieTarget",
         },
         {
           value: 1,
-          name: "Movies",
-          endpoint: "movie/popular",
+          name: "TV Series",
+          endpoint: "discover/tv",
+          collection: "tv",
+          results: [],
+          totalPages: 0,
+          pageTarget: "tvTarget",
         },
         {
           value: 2,
-          name: "Shows",
-          endpoint: "tv/popular",
+          name: "Search",
+          endpoint: "search/multi",
+          results: [],
+          totalPages: 0,
+          pageTarget: "searchTarget",
         },
         {
           value: 3,
-          name: "Search",
+          name: "Lists",
           endpoint: "",
+          results: [],
+          totalPages: 0,
         },
       ],
     };
   },
-  components: { PageLoader, DetailedPoster },
+  components: { PageLoader, DetailedPoster, PopularProviders, UserLists },
   watch: {
     currentCollection() {
       this.currentPage = 1;
-      if (this.currentCollection != 3) {
-        this.showSearch = false;
-        console.log(this.currentCollection, "updated");
-        this.getResults(this.collections[this.currentCollection].endpoint);
-      } else {
-        this.results = this.searchResults;
-        this.totalPages = 0;
-      }
+      this.updatingCollection = true;
+      this.getResults(this.collections[this.currentCollection].endpoint);
     },
     currentPage() {
-      console.log(this.currentPage);
-      if (this.currentCollection != 3) {
-        this.getResults(this.collections[this.currentCollection].endpoint);
-      }
+      console.log("current page change", this.currentPage);
+      //   if (this.currentCollection != 3) {
+      this.getResults(this.collections[this.currentCollection].endpoint);
+      //   }
     },
     searchText: debounceV2(function () {
-      if (this.searchText) {
-        this.currentPage = 1;
-        this.startSearch();
-      }
+      this.currentPage = 1;
+      this.startSearch();
     }, 500),
   },
   methods: {
+    signUp() {
+      this.$auth0.loginWithRedirect({
+        appState: {
+          target: "/profile",
+        },
+        authorizationParams: {
+          screen_hint: "signup",
+        },
+      });
+    },
+    login() {
+      this.$auth0.loginWithRedirect({
+        appState: {
+          target: "/profile",
+        },
+      });
+    },
+    toggleProviders() {
+      this.showProviders = !this.showProviders;
+      if (this.showProviders) {
+        this.showSearch = false;
+      }
+    },
+    toggleSearch() {
+      this.showSearch = !this.showSearch;
+      if (this.showSearch) {
+        this.showProviders = false;
+      }
+    },
+    toggleMenu() {
+      console.log(this.showMenu, "toggleing");
+      this.showMenu = !this.showMenu;
+      if (this.showMenu) {
+        this.menuHeight = "75vh";
+      } else {
+        this.menuHeight = "0";
+      }
+    },
+    handleSelectionChange(newValue) {
+      this.selectedProviders = newValue;
+      console.log("Selected providers changed:", this.selectedProviders);
+      this.currentPage = 1;
+      this.getResults(this.collections[this.currentCollection].endpoint);
+    },
     handleImgSrc(path) {
       if (path) {
         return (
@@ -189,6 +366,11 @@ export default {
       }
       return null;
     },
+    getWatchProviders() {
+      MoviesAPI.getWatchProviders("movie").then((resp) =>
+        console.log(resp, "available providers")
+      );
+    },
     goToDetails(item) {
       if (item.hasOwnProperty("first_air_date")) {
         console.log("this is a tv show");
@@ -197,21 +379,52 @@ export default {
         this.$router.push("media/movie/" + item.id);
       }
     },
-    getResults(collection) {
-      console.log("getting results", this.currentPage);
+    getIds(arr) {
+      return arr.map((obj) => obj.id);
+    },
+    getResults(endpoint, params) {
+      console.log("getting results", this.currentPage, endpoint);
+
+      // must be used to use watch region w/o including providers
+      const monTypeQuery = this.monTypes.join("|");
+
+      const providerQuery = this.getIds(this.selectedProviders).join("|");
+
       this.loading = true;
-      MoviesAPI.index(collection, {
-        with_origin_country: "US",
+      MoviesAPI.index(endpoint, {
+        watch_region: "US",
+        with_watch_providers: providerQuery,
+        with_watch_monetization_types: monTypeQuery,
+        language: "en-US",
         page: this.currentPage,
       })
+
+        // const selectedProviderIds = this.getIds(this.selectedProviders).join("|");
+
+        // MoviesAPI.discoverTitles(collection, {
+        //   ...params,
+        //   watch_region: "US",
+        //   // page: this.currentPage,
+        //   page: 1,
+        //   with_watch_providers: selectedProviderIds,
+        // })
         .then((resp) => {
+          console.log(resp, "results");
+
           if (this.currentPage > 1) {
-            this.results = this.results.concat(resp.data.results);
+            this.collections[this.currentCollection].results = this.collections[
+              this.currentCollection
+            ].results.concat(resp.data.results);
+            // this.results = this.results.concat(resp.data.results);
           } else {
-            this.results = resp.data.results;
+            // this.results = resp.data.results;
+            this.collections[this.currentCollection].results =
+              resp.data.results;
           }
 
-          this.totalPages = resp.data.total_pages;
+          this.collections[this.currentCollection].totalPages =
+            resp.data.totalPages;
+          // this.totalPages = resp.data.total_pages;
         })
         .catch((error) => {
           console.log(error, "error");
@@ -223,15 +436,18 @@ export default {
     startSearch() {
       this.searchModal = false;
       this.loading = true;
-      this.currentCollection = 3;
+      this.currentCollection = 2;
 
-      MoviesAPI.index("search/multi", {
-        with_origin_country: "US",
+      MoviesAPI.index(`search/multi`, {
+        // TODO: fix region param
+        region: "US",
         page: this.currentPage,
         query: this.searchText,
       })
         .then((resp) => {
-          this.results = resp.data.results;
+          this.collections[2].results = resp.data.results;
+          console.log(this.collections[2]);
+          console.log(this.collections[2].results, "search results");
         })
         .catch((error) => {
           console.log(error, "error");
@@ -242,9 +458,13 @@ export default {
     },
     handleIntersect(entries, observer) {
       console.log("intersected", entries);
-      if (entries[0].isIntersecting) {
-        this.currentPage++;
+
+      if (this.collections[this.currentCollection].results.length >= 20) {
+        if (entries[0].isIntersecting) {
+          this.currentPage++;
+        }
       }
+
       // this.getResults(this.collections[this.currentCollection].endpoint);
     },
     initObserver() {
@@ -255,16 +475,29 @@ export default {
       };
 
       this.observer = new IntersectionObserver(this.handleIntersect, options);
-      let target = document.querySelector("#target");
-      if (target) {
-        this.observer.observe(target);
-      }
+
+      let targets = document.querySelectorAll(".target");
+      console.log(targets, "targets");
+      targets.forEach((target) => {
+        if (target) {
+          this.observer.observe(target);
+        }
+      });
+      // if (target) {
+      //   this.observer.observe(target);
+      // }
+    },
+    getDiscover(collection, params) {
+      MoviesAPI.discoverTitles(collection, params).then((resp) => {
+        console.log(resp, "dicover results");
+      });
     },
   },
   async mounted() {
     console.log("mounted");
     console.log(this.$auth0);
     this.getResults(this.collections[this.currentCollection].endpoint);
+    this.getWatchProviders();
     setTimeout(() => {
       this.initObserver();
     }, 2000);
@@ -272,9 +505,29 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #home {
   // background-color: black;
   min-height: 100%;
+}
+
+.link:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.menu-card {
+  // transition: height 0.5s;
+  // overflow-y: auto;
+  // width: 100%;
+  // max-width: none;
+  // margin-top: auto;
+  border-radius: 40px 40px 0 0 !important;
+}
+
+.v-dialog .v-overlay__content {
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  bottom: 0 !important;
 }
 </style>

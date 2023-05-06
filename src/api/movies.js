@@ -33,6 +33,30 @@ export default {
       }
     );
   },
+  discoverTitles(collection, params) {
+    return axios.get(
+      `${import.meta.env.VITE_APP_MOVIE_API_V3}/discover/${collection}`,
+      {
+        params: {
+          ...params,
+          watch_region: "US",
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
+      }
+    );
+  },
+  getWatchProviders(collection, params) {
+    return axios.get(
+      `${import.meta.env.VITE_APP_MOVIE_API_V3}/watch/providers/${collection}`,
+      {
+        params: {
+          ...params,
+          watch_region: "US",
+          api_key: import.meta.env.VITE_APP_MOVIE_API_KEY_V3,
+        },
+      }
+    );
+  },
   indexVideos(id, collection, params) {
     return axios.get(
       `${import.meta.env.VITE_APP_MOVIE_API_V3}/${collection}/${id}/videos`,

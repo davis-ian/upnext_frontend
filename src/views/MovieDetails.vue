@@ -142,9 +142,12 @@
             v-if="!isAuthenticated"
             color="#23d9a5"
             title="Account Required"
-            text="Please log in or create an accout to access these features."
             variant="tonal"
-          ></v-alert>
+          >
+            Please <span @click="login" class="link">log in</span> or
+            <span @click="signUp" class="link">create an accout</span> to access
+            these features.</v-alert
+          >
           <v-btn
             :color="upcoming ? '#23d9a5' : ''"
             @click="toggleWatchlist"
@@ -470,6 +473,23 @@ export default {
   },
   methods: {
     ...mapActions(useSnackbarStore, ["showSnackbar"]),
+    signUp() {
+      this.$auth0.loginWithRedirect({
+        appState: {
+          target: "/profile",
+        },
+        authorizationParams: {
+          screen_hint: "signup",
+        },
+      });
+    },
+    login() {
+      this.$auth0.loginWithRedirect({
+        appState: {
+          target: "/profile",
+        },
+      });
+    },
     toggleTrailerVisible() {
       this.trailerVisible = !this.trailerVisible;
     },
