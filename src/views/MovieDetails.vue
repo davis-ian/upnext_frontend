@@ -108,11 +108,12 @@
           <div v-show="trailerVisible">
             <div v-if="trailer" class="video-wrap iframe-container">
               <iframe
+                id="youtube-player"
                 width="560"
                 height="315"
                 class="elevation-12"
                 style="border-radius: 10px"
-                :src="`https://www.youtube.com/embed/${trailer.key}`"
+                :src="`https://www.youtube.com/embed/${trailer.key}?enablejsapi=1`"
                 title="YouTube video player"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -490,8 +491,34 @@ export default {
         },
       });
     },
+    pauseEmbedVideo() {
+      const player = document.getElementById("youtube-player").contentWindow;
+      if (player) {
+        player.postMessage(
+          '{"event":"command","func":"pauseVideo","args":""}',
+          "*"
+        );
+      }
+    },
+    playEmbedVideo() {
+      const player = document.getElementById("youtube-player").contentWindow;
+
+      if (player) {
+        player.postMessage(
+          '{"event":"command","func":"playVideo","args":""}',
+          "*"
+        );
+      }
+    },
     toggleTrailerVisible() {
       this.trailerVisible = !this.trailerVisible;
+
+      // pause player if closed
+      if (!this.trailerVisible) {
+        this.pauseEmbedVideo();
+      } else {
+        this.playEmbedVideo();
+      }
     },
     handleImgSrc(ext, width = null) {
       if (ext) {
