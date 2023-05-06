@@ -20,9 +20,9 @@
               </div>
             </template>
           </v-img>
-          <!-- <div class="overlay"></div> -->
+          <div class="overlay"></div>
           <!-- <score-circle v-if="imageLoaded" :score="score" class="score" /> -->
-          <!-- <poster-rating v-if="imageLoaded" :score="score" class="score" /> -->
+          <poster-rating v-if="imageLoaded" :score="score" class="score" />
         </div>
       </template>
     </v-hover>
@@ -72,8 +72,8 @@ export default {
   position: absolute;
   bottom: 0;
   width: 100%;
-  height: 20%;
-  border-radius: 0 0 10px 10px;
+  height: 30%;
+  border-radius: 0 0 3px 3px;
   background: linear-gradient(hsl(0 0% 0% / 0), hsl(0 0% 0% / 1));
 }
 .img-wrap:hover {

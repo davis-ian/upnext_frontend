@@ -1,5 +1,5 @@
 <template>
-  <div class="pa-2" style="width: 100%">
+  <div style="width: 100%">
     <div style="display: flex; align-items: center">
       <!-- <span style="color: white">{{ score }}</span> -->
       <!-- <font-awesome-icon
@@ -12,14 +12,21 @@
         icon="fa-solid fa-star-half"
         style="color: #ffde03; font-size: 1.2rem"
       ></font-awesome-icon> -->
-      <v-progress-linear
+      <!-- <v-progress-linear
         :color="getProgressColor(score * 10)"
         :model-value="score * 10"
-      ></v-progress-linear>
+      ></v-progress-linear> -->
 
-      <span style="color: white" class="ml-3"
-        >{{ Math.floor(score * 10) }}%</span
-      >
+      <!-- <span style="color: white">{{ Math.floor(score * 10) }}%</span> -->
+      <font-awesome-icon
+        class="mr-1"
+        icon="fa-solid fa-star"
+        style="font-size: 0.8rem"
+        :style="{ color: getProgressColor(score * 10) }"
+      ></font-awesome-icon>
+      <span>
+        <span>{{ Math.round(score * 10) / 10 }}</span>
+      </span>
     </div>
   </div>
 </template>
@@ -45,9 +52,9 @@ export default {
   methods: {
     getProgressColor(val) {
       if (val > 70) {
-        return "#01c6ac";
-      } else if (val > 50) {
         return "#FFDE03";
+      } else if (val > 50) {
+        return "#01c6ac";
       } else {
         return "#b00020";
       }
