@@ -713,7 +713,13 @@ export default {
         console.log(resp.data.results, "release dates");
         let usRating = resp.data.results.find((x) => x.iso_3166_1 == "US");
         if (usRating) {
-          this.contentRating = usRating.release_dates[0].certification;
+          // this.contentRating = usRating.release_dates[0].certification;
+          for (let i = 0; i < usRating.release_dates.length; i++) {
+            if (usRating.release_dates[i].certification) {
+              this.contentRating = usRating.release_dates[i].certification;
+              break; // Exit the loop after the first item with certification is found
+            }
+          }
         }
       });
     },
