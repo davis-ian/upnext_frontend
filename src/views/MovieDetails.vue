@@ -183,7 +183,7 @@
         </div>
       </v-col>
 
-      <v-col cols="12">
+      <!-- <v-col cols="12">
         <h3>Other Reccomendations</h3>
         <coverflow :items="recommendations" />
       </v-col>
@@ -255,7 +255,7 @@
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
-      </v-col>
+      </v-col> -->
 
       <v-col cols="12">
         <h3>Reviews</h3>
