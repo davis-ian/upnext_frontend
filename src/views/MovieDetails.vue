@@ -592,7 +592,7 @@ export default {
       // console.log(target);
     },
     async getDetails(id) {
-      return MoviesAPI.show(id, `/${this.$route.params.mediaType}/`, {}).then(
+      return MoviesAPI.show(id, `${this.$route.params.mediaType}`, {}).then(
         (resp) => {
           this.media = resp.data;
           if (this.media.hasOwnProperty("first_air_date")) {
