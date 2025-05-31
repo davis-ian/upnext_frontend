@@ -1,7 +1,16 @@
 <template>
   <div id="detail-wrap">
-    <v-row no-gutters>
-      <v-col>
+    <div style="position: relative">
+      <div
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          margin: auto;
+          z-index: 0;
+        "
+      >
         <div class="image-container">
           <div style="z-index: -1; height: 100; width: 100%" v-if="media">
             <v-img
@@ -10,180 +19,181 @@
               :lazy-src="handleImgSrc(media.backdrop_path, 800)"
             >
               <div class="gradient-overlay"></div>
-              <v-btn variant="tonal" @click="$router.back" class="ma-3"
-                ><font-awesome-icon
-                  icon="fa-solid fa-arrow-left"
-                ></font-awesome-icon
-              ></v-btn>
             </v-img>
           </div>
         </div>
-      </v-col>
-    </v-row>
+      </div>
 
-    <v-row class="pa-3 mt-0" v-if="media">
-      <v-col cols="8">
-        <div class="mb-2" v-if="contentRating">
-          <v-chip size="small" color="#23d9a5" variant="outlined" label>{{
-            contentRating
-          }}</v-chip>
-          <v-btn
-            v-if="trailer"
-            class="ml-2"
-            size="small"
-            @click="toggleTrailerVisible"
-            variant="tonal"
-          >
-            <span>Trailer</span>
-            <font-awesome-icon
+      <v-row class="pa-3 mt-0" v-if="media">
+        <v-col cols="8" style="z-index: 2">
+          <v-btn variant="tonal" @click="$router.back" class="mb-6"
+            ><font-awesome-icon
+              icon="fa-solid fa-arrow-left"
+            ></font-awesome-icon
+          ></v-btn>
+          <div class="mb-2" v-if="contentRating">
+            <v-chip size="small" color="#23d9a5" variant="outlined" label>{{
+              contentRating
+            }}</v-chip>
+            <v-btn
+              v-if="trailer"
               class="ml-2"
-              icon="fa-solid fa-play"
+              size="small"
+              @click="toggleTrailerVisible"
+              variant="tonal"
+            >
+              <span>Trailer</span>
+              <font-awesome-icon
+                class="ml-2"
+                icon="fa-solid fa-play"
+              ></font-awesome-icon>
+            </v-btn>
+          </div>
+          <h2 v-if="mediaType == 'movie'">{{ media.title }}</h2>
+          <h2 v-if="mediaType == 'tv'">{{ media.name }}</h2>
+
+          <div>
+            <font-awesome-icon
+              class="mr-2"
+              icon="fa-solid fa-star"
             ></font-awesome-icon>
-          </v-btn>
-        </div>
-        <h2 v-if="mediaType == 'movie'">{{ media.title }}</h2>
-        <h2 v-if="mediaType == 'tv'">{{ media.name }}</h2>
-
-        <div>
-          <font-awesome-icon
-            class="mr-2"
-            icon="fa-solid fa-star"
-          ></font-awesome-icon>
-          <span>
-            <strong>{{ Math.round(media.vote_average * 10) / 10 }}</strong>
-            /10
-          </span>
-        </div>
-
-        <div
-          v-if="mediaType == 'movie'"
-          style="display: flex; flex-direction: column"
-        >
-          <span v-if="media.release_date">{{
-            media.release_date.split("-")[0]
-          }}</span>
-          <span>{{ media.runtime }} min</span>
-        </div>
-
-        <div v-if="mediaType == 'tv'">
-          <div>
-            {{ media.number_of_seasons }} Season{{
-              media.number_of_seasons > 1 ? "s" : ""
-            }}
-          </div>
-          <div>
             <span>
-              {{ media.first_air_date.split("-")[0] }}
-            </span>
-            -
-            <span>
-              {{ media.in_production ? "" : media.last_air_date.split("-")[0] }}
+              <strong>{{ Math.round(media.vote_average * 10) / 10 }}</strong>
+              /10
             </span>
           </div>
-        </div>
 
-        <div>
-          <font-awesome-icon
-            :icon="mediaType == 'tv' ? 'fa-solid fa-tv' : 'fa-solid fa-film'"
-          />
-          {{ mediaType == "tv" ? "TV" : "Movie" }}
-        </div>
+          <div
+            v-if="mediaType == 'movie'"
+            style="display: flex; flex-direction: column"
+          >
+            <span v-if="media.release_date">{{
+              media.release_date.split("-")[0]
+            }}</span>
+            <span>{{ media.runtime }} min</span>
+          </div>
 
-        <!-- <div v-if="crew[0]">
-          <span>Directed by</span> <strong>{{ crew[0].name }}</strong>
-        </div> -->
-        <!-- <v-btn @click="toggleWatched">watch</v-btn> -->
-      </v-col>
-      <v-col cols="4">
-        <v-img
-          cover
-          class="poster elevation-6"
-          :src="handleImgSrc(media.poster_path, 500)"
-          :lazy-src="handleImgSrc(media.poster_path, 500)"
-        ></v-img>
-      </v-col>
-
-      <v-col cols="12">
-        <v-expand-transition>
-          <div v-show="trailerVisible">
-            <div v-if="trailer" class="video-wrap iframe-container">
-              <iframe
-                id="youtube-player"
-                width="560"
-                height="315"
-                class="elevation-12"
-                style="border-radius: 10px"
-                :src="`https://www.youtube.com/embed/${trailer.key}?enablejsapi=1`"
-                title="YouTube video player"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-              ></iframe>
+          <div v-if="mediaType == 'tv'">
+            <div>
+              {{ media.number_of_seasons }} Season{{
+                media.number_of_seasons > 1 ? "s" : ""
+              }}
+            </div>
+            <div>
+              <span>
+                {{ media.first_air_date.split("-")[0] }}
+              </span>
+              -
+              <span>
+                {{
+                  media.in_production ? "" : media.last_air_date.split("-")[0]
+                }}
+              </span>
             </div>
           </div>
-        </v-expand-transition>
-      </v-col>
 
-      <v-col cols="12">
-        <div style="display: flex; flex-wrap: wrap; gap: 7px">
-          <v-chip v-for="(genre, i) in media.genres" color="#23d9a5">{{
-            genre.name
-          }}</v-chip>
-        </div>
-      </v-col>
-
-      <v-col cols="12">
-        <h3>{{ media.tagline }}</h3>
-        <p>{{ media.overview }}</p>
-      </v-col>
-
-      <v-col cols="12">
-        <div style="display: flex; flex-direction: column; gap: 10px">
-          <v-alert
-            v-if="!isAuthenticated"
-            color="#23d9a5"
-            title="Account Required"
-            variant="tonal"
-          >
-            Please <span @click="login" class="link">log in</span> or
-            <span @click="signUp" class="link">create an accout</span> to access
-            these features.</v-alert
-          >
-          <v-btn
-            :color="upcoming ? '#23d9a5' : ''"
-            @click="toggleWatchlist"
-            variant="tonal"
-            :disabled="!isAuthenticated"
-          >
-            <span> Watchlist </span>
+          <div>
             <font-awesome-icon
-              class="ml-2"
-              :icon="upcoming ? 'fa-solid fa-minus' : 'fa-solid fa-plus'"
-            ></font-awesome-icon>
-          </v-btn>
-          <v-btn
-            @click="toggleWatched"
-            :color="watched ? '#23d9a5' : ''"
-            variant="tonal"
-            :disabled="!isAuthenticated"
-          >
-            <span>Watched</span>
-            <font-awesome-icon
-              class="ml-2"
-              :icon="watched ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"
-            ></font-awesome-icon>
-          </v-btn>
-          <!-- <font-awesome-icon
+              :icon="mediaType == 'tv' ? 'fa-solid fa-tv' : 'fa-solid fa-film'"
+            />
+            {{ mediaType == "tv" ? "TV" : "Movie" }}
+          </div>
+
+          <!-- <div v-if="crew[0]">
+          <span>Directed by</span> <strong>{{ crew[0].name }}</strong>
+        </div> -->
+          <!-- <v-btn @click="toggleWatched">watch</v-btn> -->
+        </v-col>
+        <v-col cols="4">
+          <v-img
+            cover
+            class="poster elevation-6"
+            :src="handleImgSrc(media.poster_path, 500)"
+            :lazy-src="handleImgSrc(media.poster_path, 500)"
+          ></v-img>
+        </v-col>
+
+        <v-col cols="12" style="z-index: 2">
+          <v-expand-transition>
+            <div v-show="trailerVisible">
+              <div v-if="trailer" class="video-wrap iframe-container">
+                <iframe
+                  id="youtube-player"
+                  width="560"
+                  height="315"
+                  class="elevation-12"
+                  style="border-radius: 10px"
+                  :src="`https://www.youtube.com/embed/${trailer.key}?enablejsapi=1`"
+                  title="YouTube video player"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                ></iframe>
+              </div>
+            </div>
+          </v-expand-transition>
+        </v-col>
+
+        <v-col cols="12">
+          <div style="display: flex; flex-wrap: wrap; gap: 7px">
+            <v-chip v-for="(genre, i) in media.genres" color="#23d9a5">{{
+              genre.name
+            }}</v-chip>
+          </div>
+        </v-col>
+
+        <v-col cols="12" style="z-index: 2">
+          <h3>{{ media.tagline }}</h3>
+          <p>{{ media.overview }}</p>
+        </v-col>
+
+        <v-col cols="12">
+          <div style="display: flex; flex-direction: column; gap: 10px">
+            <v-alert
+              v-if="!isAuthenticated"
+              color="#23d9a5"
+              title="Account Required"
+              variant="tonal"
+            >
+              Please <span @click="login" class="link">log in</span> or
+              <span @click="signUp" class="link">create an accout</span> to
+              access these features.</v-alert
+            >
+            <v-btn
+              :color="upcoming ? '#23d9a5' : ''"
+              @click="toggleWatchlist"
+              variant="tonal"
+              :disabled="!isAuthenticated"
+            >
+              <span> Watchlist </span>
+              <font-awesome-icon
+                class="ml-2"
+                :icon="upcoming ? 'fa-solid fa-minus' : 'fa-solid fa-plus'"
+              ></font-awesome-icon>
+            </v-btn>
+            <v-btn
+              @click="toggleWatched"
+              :color="watched ? '#23d9a5' : ''"
+              variant="tonal"
+              :disabled="!isAuthenticated"
+            >
+              <span>Watched</span>
+              <font-awesome-icon
+                class="ml-2"
+                :icon="watched ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'"
+              ></font-awesome-icon>
+            </v-btn>
+            <!-- <font-awesome-icon
               class="ml-2"
               :icon="
                 watched ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle'
               "
             ></font-awesome-icon> -->
-          <!-- <v-btn variant="tonal">Rate</v-btn> -->
-        </div>
-      </v-col>
+            <!-- <v-btn variant="tonal">Rate</v-btn> -->
+          </div>
+        </v-col>
 
-      <!-- <v-col cols="12">
+        <!-- <v-col cols="12">
         <h3>Other Reccomendations</h3>
         <coverflow :items="recommendations" />
       </v-col>
@@ -257,56 +267,57 @@
         </v-expansion-panels>
       </v-col> -->
 
-      <v-col cols="12">
-        <h3>Reviews</h3>
-        <v-divider theme="dark"></v-divider>
-        <div v-if="reviews.length == 0">
-          <p>No reviews found.</p>
-        </div>
-      </v-col>
+        <v-col cols="12">
+          <h3>Reviews</h3>
+          <v-divider theme="dark"></v-divider>
+          <div v-if="reviews.length == 0">
+            <p>No reviews found.</p>
+          </div>
+        </v-col>
 
-      <v-col cols="12" v-for="(review, i) in reviews">
-        <v-row>
-          <v-col cols="2">
-            <v-avatar
-              v-if="
-                review.author_details.avatar_path &&
-                !review.author_details.avatar_path.includes('https')
-              "
-            >
-              <v-img
-                :src="
-                  'https://image.tmdb.org/t/p/original/' +
-                  review.author_details.avatar_path
+        <v-col cols="12" v-for="(review, i) in reviews">
+          <v-row>
+            <v-col cols="2">
+              <v-avatar
+                v-if="
+                  review.author_details.avatar_path &&
+                  !review.author_details.avatar_path.includes('https')
                 "
-                alt="avatar"
-              />
-            </v-avatar>
-            <v-avatar color="#23d9a5" v-else>
-              <span>{{ Array.from(review.author_details.name)[0] }}</span>
-            </v-avatar>
-          </v-col>
-          <v-col>
-            <div>
-              <span>{{ review.author }}</span>
-            </div>
-          </v-col>
-          <v-col>
-            <span>
-              <font-awesome-icon
-                v-for="(rating, i) in review.author_details.rating"
-                icon="fa-solid fa-star"
-              ></font-awesome-icon>
-            </span>
-          </v-col>
-        </v-row>
+              >
+                <v-img
+                  :src="
+                    'https://image.tmdb.org/t/p/original/' +
+                    review.author_details.avatar_path
+                  "
+                  alt="avatar"
+                />
+              </v-avatar>
+              <v-avatar color="#23d9a5" v-else>
+                <span>{{ Array.from(review.author_details.name)[0] }}</span>
+              </v-avatar>
+            </v-col>
+            <v-col>
+              <div>
+                <span>{{ review.author }}</span>
+              </div>
+            </v-col>
+            <v-col>
+              <span>
+                <font-awesome-icon
+                  v-for="(rating, i) in review.author_details.rating"
+                  icon="fa-solid fa-star"
+                ></font-awesome-icon>
+              </span>
+            </v-col>
+          </v-row>
 
-        <div class="my-4">
-          {{ review.content }}
-        </div>
-        <v-divider theme="dark"></v-divider>
-      </v-col>
-    </v-row>
+          <div class="my-4">
+            {{ review.content }}
+          </div>
+          <v-divider theme="dark"></v-divider>
+        </v-col>
+      </v-row>
+    </div>
 
     <v-row class="pa-3" v-if="false">
       <!-- <v-col cols="12">
